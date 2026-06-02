@@ -1,16 +1,16 @@
 /* =============================================
-   FOREST WISH SYSTEM — Jungle Theme (Premium)
+   OCEAN WISH SYSTEM — Deep Sea Theme 
    ============================================= */
 
 :root {
-    --bg-dark:      #060e06;
-    --card-bg:      #162416;
-    --gold:         #c8a84b;
-    --gold-dark:    #a8882b;
-    --green-mid:    #1a4a1a;
-    --green-leaf:   #2d7a2d;
-    --amber:        #d4873c;
-    --cream:        #e8f0d8;
+    --bg-dark:      #030914; /* น้ำเงินเข้มก้นมหาสมุทร */
+    --card-bg:      #0b162c; /* บล็อกการ์ดน้ำเงินครามพรีเมียม */
+    --gold:         #e0b84c; /* ทองคำวารีเรืองแสง */
+    --gold-dark:    #b38f2b;
+    --ocean-deep:   #061e3d;
+    --aqua-neon:    #2dd4bf; /* ฟ้าอความารีนเรืองแสง */
+    --amber:        #e0a94c;
+    --cream:        #e2f1f7;
     --control-bar-height: 80px;
 }
 
@@ -27,21 +27,21 @@ body {
     align-items: center;
 }
 
-/* ── 🌲 ชั้นผูกภาพป่าโบราณ ตรึงแผ่นหลังเต็มระบบ 🌲 ── */
+/* ── 🌊 ชั้นผูกภาพใต้ท้องทะเลลึก ตรึงแผ่นหลังเต็มระบบ ── */
 #forestBg {
     position: fixed;
     top: 0; left: 0;
     width: 100%; height: 100%;
     z-index: -2; 
     background-color: var(--bg-dark); 
-    background-image: url('forest-bg.jpg'); /* มุ่งตรงสู่ไฟล์ .jpg ของมึง */
+    background-image: url('ocean-bg.jpg'); /* 🔥 ลิงก์ตรงเข้าสู่ภาพพื้นหลังทะเลของมึง */
     background-size: cover;
     background-position: center;
     pointer-events: none;
-    animation: yggdrasilPulse 10s ease-in-out infinite;
+    animation: oceanPulse 12s ease-in-out infinite; /* ลูบหายใจใต้คลื่นน้ำลึก */
 }
 
-/* ── Background canvas (รันเอ็นจิ้นหิ่งห้อยพรีเมียมและหมอกควันเวทมนตร์) ── */
+/* ── Background canvas (รันฝูงฟองอากาศและคลื่นวารี) ── */
 #starCanvas {
     position: fixed; top: 0; left: 0;
     width: 100%; height: 100%;
@@ -49,11 +49,11 @@ body {
     background: transparent; 
 }
 
-/* ── Flash overlay ── */
+/* ── Flash overlay — คลื่นสมุทรกลืนจอ ── */
 #flashOverlay {
     position: fixed; top: 0; left: 0;
     width: 100%; height: 100%;
-    background: #061a06;
+    background: #020b14;
     z-index: 850;
     pointer-events: none;
     opacity: 0;
@@ -61,7 +61,7 @@ body {
 }
 
 /* ==============================
-   CONTAINERS
+   CONTAINERS (จัดกึ่งกลางสมบูรณ์แบบไร้ตัวเบียด)
    ============================= */
 .container {
     position: relative;
@@ -74,12 +74,12 @@ body {
 }
 
 .setup-box {
-    background: rgba(6, 20, 6, 0.85);
+    background: rgba(3, 11, 24, 0.88);
     padding: 40px 30px;
     border-radius: 20px;
-    border: 1px solid rgba(80, 160, 80, 0.3);
-    backdrop-filter: blur(12px);
-    box-shadow: 0 0 60px rgba(20, 80, 20, 0.3), inset 0 0 40px rgba(0,0,0,0.4);
+    border: 1px solid rgba(45, 212, 191, 0.25);
+    backdrop-filter: blur(15px);
+    box-shadow: 0 0 60px rgba(11, 35, 71, 0.5), inset 0 0 40px rgba(0,0,0,0.5);
 }
 
 .logo-wrap {
@@ -97,18 +97,18 @@ body {
     color: var(--gold);
     font-size: clamp(20px, 4vw, 32px);
     margin: 0;
-    text-shadow: 0 0 20px rgba(200, 168, 75, 0.6);
+    text-shadow: 0 0 20px rgba(224, 184, 76, 0.6);
     letter-spacing: 2px;
 }
-.sub-text { color: #7aaa7a; font-size: 14px; margin-bottom: 20px; }
+.sub-text { color: #7fa6c7; font-size: 14px; margin-bottom: 20px; }
 
 /* ── Input ── */
 input[type="text"] {
     width: 80%;
     padding: 15px;
     border-radius: 12px;
-    border: 1px solid rgba(80, 160, 80, 0.4);
-    background: rgba(0, 10, 0, 0.6);
+    border: 1px solid rgba(45, 212, 191, 0.3);
+    background: rgba(1, 5, 12, 0.7);
     color: var(--cream);
     text-align: center;
     font-size: 16px;
@@ -118,27 +118,27 @@ input[type="text"] {
     transition: border-color 0.3s;
 }
 input[type="text"]:focus {
-    border-color: var(--gold);
-    box-shadow: 0 0 15px rgba(200, 168, 75, 0.2);
+    border-color: var(--aqua-neon);
+    box-shadow: 0 0 15px rgba(45, 212, 191, 0.3);
 }
 
 /* ── Wish button ── */
 .btn-wish {
     background: linear-gradient(160deg, var(--gold) 0%, var(--gold-dark) 100%);
-    color: #1a0e00;
+    color: #040914;
     padding: 12px 30px;
     font-size: 18px;
     font-weight: 800;
     font-family: 'Kanit', sans-serif;
     border-radius: 50px;
-    border: 3px solid rgba(240, 220, 150, 0.7);
+    border: 3px solid rgba(255, 235, 170, 0.8);
     cursor: pointer;
-    box-shadow: 0 5px 25px rgba(0,0,0,0.4), 0 0 15px rgba(200, 168, 75, 0.3);
+    box-shadow: 0 5px 25px rgba(0,0,0,0.5), 0 0 15px rgba(224, 184, 76, 0.3);
     white-space: nowrap;
     transition: transform 0.1s, box-shadow 0.2s;
     letter-spacing: 1px;
 }
-.btn-wish:hover  { box-shadow: 0 8px 30px rgba(0,0,0,0.5), 0 0 25px rgba(200, 168, 75, 0.5); }
+.btn-wish:hover  { box-shadow: 0 8px 30px rgba(0,0,0,0.6), 0 0 25px rgba(224, 184, 76, 0.5); }
 .btn-wish:active { transform: scale(0.95); }
 .start-btn {
     font-size: 22px;
@@ -150,9 +150,9 @@ input[type="text"]:focus {
 /* ── Pool count ── */
 .pool-count {
     font-size: 18px;
-    color: #8aba8a;
+    color: #7fa6c7;
     margin-top: 20px;
-    text-shadow: 0 0 10px rgba(100,200,100,0.3);
+    text-shadow: 0 0 10px rgba(45,212,191,0.2);
 }
 
 /* ==============================
@@ -162,7 +162,7 @@ input[type="text"]:focus {
     display: none;
     position: fixed; top: 0; left: 0;
     width: 100%; height: 100%;
-    background: rgba(4, 10, 4, 0.95);
+    background: rgba(2, 6, 15, 0.96);
     z-index: 700;
     flex-direction: column;
 }
@@ -171,7 +171,7 @@ input[type="text"]:focus {
     flex: 0 0 auto;
     padding: 20px;
     text-align: center;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent);
+    background: linear-gradient(to bottom, rgba(0,0,0,0.95), transparent);
 }
 .result-header h1 {
     margin: 0;
@@ -198,11 +198,11 @@ input[type="text"]:focus {
 
 /* ── Cards ── */
 .card {
-    background: linear-gradient(145deg, #162416 0%, #0d180d 100%);
+    background: linear-gradient(145deg, #0b162c 0%, #040914 100%);
     border-radius: 12px;
     overflow: hidden;
-    border: 2px solid #2a4a2a;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+    border: 2px solid #1a2f56;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05);
     display: flex; flex-direction: column;
     min-height: 250px;
     animation: popIn 0.4s ease-out backwards;
@@ -210,7 +210,7 @@ input[type="text"]:focus {
 }
 .card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.6), 0 0 15px rgba(100,200,100,0.1);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.7), 0 0 15px rgba(45,212,191,0.15);
 }
 
 .card-header {
@@ -218,7 +218,7 @@ input[type="text"]:focus {
     font-size: clamp(14px, 3.5vw, 18px);
     font-weight: 800;
     text-align: center;
-    color: #0a0a00;
+    color: #040914;
     letter-spacing: 1px;
 }
 .card-body {
@@ -237,7 +237,7 @@ input[type="text"]:focus {
 }
 .info-sub {
     font-size: 12px;
-    color: #8aaa8a;
+    color: #7fa6c7;
     white-space: normal;
     word-wrap: break-word;
     line-height: 1.4;
@@ -248,8 +248,8 @@ input[type="text"]:focus {
     position: fixed; bottom: 0; left: 0;
     width: 100%;
     height: var(--control-bar-height);
-    background: rgba(8, 18, 8, 0.97);
-    border-top: 1px solid rgba(60, 120, 60, 0.4);
+    background: rgba(3, 9, 20, 0.98);
+    border-top: 1px solid rgba(45, 212, 191, 0.3);
     display: flex;
     justify-content: center; align-items: center;
     gap: 20px;
@@ -259,8 +259,8 @@ input[type="text"]:focus {
 
 .btn-secondary {
     background: transparent;
-    border: 1px solid #4a7a4a;
-    color: #8aaa8a;
+    border: 1px solid #1a3f66;
+    color: #7fa6c7;
     font-size: 16px; font-family: 'Kanit', sans-serif;
     padding: 10px 25px;
     border-radius: 50px;
@@ -268,9 +268,9 @@ input[type="text"]:focus {
     transition: all 0.2s;
 }
 .btn-secondary:hover {
-    border-color: var(--green-leaf);
+    border-color: var(--aqua-neon);
     color: var(--cream);
-    background: rgba(45, 122, 45, 0.15);
+    background: rgba(45, 212, 191, 0.12);
 }
 
 @keyframes popIn {
@@ -283,43 +283,43 @@ input[type="text"]:focus {
    ============================== */
 .btn-history-toggle {
     position: fixed; top: 20px; right: 20px;
-    background: rgba(20, 50, 20, 0.7);
+    background: rgba(3, 15, 36, 0.85);
     color: var(--gold);
-    border: 2px solid rgba(200, 168, 75, 0.5);
+    border: 2px solid rgba(224, 184, 76, 0.5);
     padding: 12px 25px;
     border-radius: 50px;
     cursor: pointer;
     z-index: 10000;
     font-weight: bold; font-family: 'Kanit', sans-serif; font-size: 15px;
     backdrop-filter: blur(8px);
-    box-shadow: 0 0 15px rgba(200, 168, 75, 0.15);
+    box-shadow: 0 0 15px rgba(224, 184, 76, 0.15);
     transition: all 0.2s;
 }
 .btn-history-toggle:hover {
-    background: rgba(200, 168, 75, 0.15);
+    background: rgba(224, 184, 76, 0.15);
     border-color: var(--gold);
     transform: scale(1.05);
-    box-shadow: 0 0 20px rgba(200, 168, 75, 0.3);
+    box-shadow: 0 0 20px rgba(224, 184, 76, 0.3);
 }
 
 .history-modal {
     display: none;
     position: fixed; top: 0; left: 0;
     width: 100%; height: 100%;
-    background: rgba(0, 5, 0, 0.88);
+    background: rgba(1, 4, 10, 0.9);
     z-index: 2000;
     justify-content: center; align-items: center;
     backdrop-filter: blur(12px);
 }
 .history-content {
-    background: #111a11;
+    background: #061124;
     width: 95%; max-width: 700px; max-height: 85vh;
     border-radius: 16px;
-    border: 1px solid rgba(60, 120, 60, 0.4);
+    border: 1px solid rgba(45, 212, 191, 0.3);
     display: flex; flex-direction: column;
     overflow: hidden;
     animation: fadeIn 0.3s ease-out;
-    box-shadow: 0 0 60px rgba(0,0,0,0.8), 0 0 30px rgba(20,80,20,0.2);
+    box-shadow: 0 0 60px rgba(0,0,0,0.8), 0 0 30px rgba(11,35,71,0.2);
 }
 @keyframes fadeIn {
     from { opacity: 0; transform: scale(0.95) translateY(10px); }
@@ -327,8 +327,8 @@ input[type="text"]:focus {
 }
 .history-header {
     padding: 15px 20px;
-    background: #0d150d;
-    border-bottom: 1px solid rgba(60, 120, 60, 0.3);
+    background: #030a17;
+    border-bottom: 1px solid rgba(45, 212, 191, 0.2);
     display: flex; justify-content: space-between; align-items: center;
     flex-shrink: 0;
 }
@@ -341,7 +341,7 @@ input[type="text"]:focus {
 }
 .close-btn {
     background: none; border: none;
-    color: #5a8a5a; font-size: 28px;
+    color: #43719c; font-size: 28px;
     cursor: pointer; padding: 0;
     transition: color 0.2s;
 }
@@ -350,16 +350,16 @@ input[type="text"]:focus {
 .history-body {
     display: flex; flex-direction: column;
     flex: 1; min-height: 0;
-    background: #111a11; overflow: hidden;
+    background: #061124; overflow: hidden;
 }
 .history-tabs {
     display: flex; gap: 8px;
     padding: 0 15px;
-    background: #111a11;
-    border-bottom: 2px solid #1a2a1a;
+    background: #061124;
+    border-bottom: 2px solid #0f2244;
     overflow-x: auto; white-space: nowrap;
     flex-shrink: 0;
-    -ms-overflow-style: none; scrollbar-width: none;
+    scrollbar-width: none;
     cursor: grab; user-select: none;
 }
 .history-tabs::-webkit-scrollbar { display: none; }
@@ -367,7 +367,7 @@ input[type="text"]:focus {
 
 .tab-btn {
     background: transparent; border: none;
-    color: #5a8a5a;
+    color: #5887b5;
     padding: 14px 10px;
     font-family: 'Kanit', sans-serif; font-size: 15px; font-weight: 600;
     cursor: pointer; position: relative;
@@ -385,38 +385,32 @@ input[type="text"]:focus {
 
 .history-content-wrapper {
     flex-grow: 1; overflow-y: auto; padding: 10px 0;
-    scrollbar-width: thin; scrollbar-color: #2a4a2a #111a11;
+    scrollbar-width: thin; scrollbar-color: #1a3f66 #061124;
 }
 .history-content-wrapper::-webkit-scrollbar { width: 6px; }
-.history-content-wrapper::-webkit-scrollbar-track { background: #111a11; }
-.history-content-wrapper::-webkit-scrollbar-thumb { background: #2a4a2a; border-radius: 4px; }
+.history-content-wrapper::-webkit-scrollbar-track { background: #061124; }
+.history-content-wrapper::-webkit-scrollbar-thumb { background: #1a3f66; border-radius: 4px; }
 
 .tab-content { display: none; }
 .tab-content.active { display: block; }
 
 .history-item {
     padding: 12px 20px;
-    border-bottom: 1px solid #1a2a1a;
+    border-bottom: 1px solid #0f2244;
     display: flex; justify-content: space-between;
     align-items: flex-start; font-size: 15px;
     transition: background 0.15s;
 }
 .history-item:hover { background: rgba(255,255,255,0.02); }
 .history-item span {
-    text-align: right; color: #5a8a5a;
+    text-align: right; color: #5887b5;
     font-size: 14px; padding-left: 15px;
     white-space: normal; max-width: 50%; word-break: break-word;
 }
 
-/* ── Animations ── */
-@keyframes pulse {
-    0%   { transform: scale(1);    opacity: 1;   }
-    50%  { transform: scale(0.98); opacity: 0.8; }
-    100% { transform: scale(1);    opacity: 1;   }
-}
-
-@keyframes yggdrasilPulse {
-    0%   { filter: brightness(0.85) contrast(1) saturate(1); }
-    50%  { filter: brightness(1.15) contrast(1.1) saturate(1.2); }
-    100% { filter: brightness(0.85) contrast(1) saturate(1); }
+/* ── อนิมชันหายใจของคลื่นใต้ท้องทะเลลึก ── */
+@keyframes oceanPulse {
+    0%   { filter: brightness(0.8) contrast(1); }
+    50%  { filter: brightness(1.1) contrast(1.05); }
+    100% { filter: brightness(0.8) contrast(1); }
 }
