@@ -26,6 +26,8 @@
 
     <!-- 📦กล่องหลักระบบสุ่ม จัดกึ่งกลางสมบูรณ์แบบ -->
     <div class="container" id="mainScreen">
+        
+        <!-- กล่องที่ 1: หน้า Setup สำหรับให้แอดมินใส่ลิงก์ CSV (จะซ่อนออโต้เมื่อโหลดเสร็จ) -->
         <div class="setup-box" id="setupContainer">
             <div class="logo-wrap">
                 <span class="leaf-icon">🔱</span>
@@ -37,6 +39,7 @@
             <button class="btn-wish start-btn" onclick="loadData()">Load Data (Admin Only)</button>
         </div>
 
+        <!-- กล่องที่ 2: หน้าควบคุมการสุ่มรางวัล (จะยอมโผล่มาหลังจากโหลดข้อมูลสำเร็จเท่านั้น!) -->
         <div id="adminControls" style="display: none; margin-top: 20px;">
             <div id="bannerDisplay"></div>
             <div class="pool-count" id="poolCount">คงเหลือผู้ลุ้นรางวัล: 0 คน</div>
