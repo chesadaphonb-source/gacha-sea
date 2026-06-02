@@ -24,7 +24,7 @@ let waterTides = [];
 let tideAlpha = 0;
 let targetTideAlpha = 0;
 
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzya9mZ86bYNaZdXLgr46DjX1afWMxEs10kjyWdnT77C3vcxO2hA6APWco3Pz5vnTIW/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxYNML38mXJT-x_5ya7HXKh9ZuIt2yYpAc5FsR8rKjEWxtqm95GqSuBf72i61vXAHjIsA/exec";
 
 /* =============================================
    HELPER
