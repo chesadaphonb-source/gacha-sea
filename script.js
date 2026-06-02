@@ -1,5 +1,5 @@
 /* =============================================
-   FOREST WISH SYSTEM — Projector Local Mode (Premium Mystical Fog)
+   OCEAN WISH SYSTEM — Projector Local Mode (Premium Deep Sea)
    ============================================= */
 
 /* --- Configuration --- */
@@ -19,10 +19,10 @@ let isWarping      = false;
 let currentTierColor = "#65d4a0";
 let winnersHistory = {};
 
-// ระบบหมอกมหาเวทย์แผ่ซ่านครอบคลุมหน้าจอ (Mystical Fog State)
-let fogParticles = [];
-let fogAlpha = 0;
-let targetFogAlpha = 0;
+// ระบบคลื่นน้ำมหาเสน่ห์แผ่ซ่านครอบคลุมหน้าจอ (Deep Sea Tidal Engine)
+let waterTides = [];
+let tideAlpha = 0;
+let targetTideAlpha = 0;
 
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzya9mZ86bYNaZdXLgr46DjX1afWMxEs10kjyWdnT77C3vcxO2hA6APWco3Pz5vnTIW/exec";
 
@@ -49,10 +49,10 @@ function getDisplayData(winner) {
    1. INIT SYSTEM
    ============================================= */
 window.onload = function () {
-    console.log("Forest Wish System — Premium Mystical Fog Mode");
+    console.log("Ocean Wish System — Premium Deep Sea Mode Built Completed");
     prizes.forEach(p => { if (!winnersHistory[p.name]) winnersHistory[p.name] = []; });
 
-    initPremiumEngine();
+    initOceanEngine();
     animate();
 
     document.getElementById('setupContainer').style.display = 'flex';
@@ -105,13 +105,13 @@ function loadData() {
 
 function updateUI(showCount = false) {
     if (currentTier >= prizes.length) {
-        let endHtml = `<h1 class="gold-text" style="font-family:'Cinzel Decorative',serif;">🌿 จบกิจกรรม! 🌿</h1>
-                       <p style="color:#8aaa8a;margin-bottom:20px;">ขอบคุณผู้ร่วมสนุกทุกคน</p>
+        let endHtml = `<h1 class="gold-text" style="font-family:'Cinzel Decorative',serif;">🔱 จบกิจกรรมเจ้าสมุทร! 🔱</h1>
+                       <p style="color:#7fa6c7;margin-bottom:20px;">ขอบคุณผู้ร่วมสนุกทุกคน</p>
                        <button onclick="resetGame()" style="
                         padding:15px 40px;font-size:22px;font-family:'Kanit',sans-serif;
-                        background:linear-gradient(45deg,#2d5a2d,#4a8a4a);
-                        color:#e8f0d8;border:none;border-radius:50px;cursor:pointer;
-                        box-shadow:0 0 20px rgba(60,160,60,0.4);font-weight:bold;transition:transform 0.2s;"
+                        background:linear-gradient(45deg,#1e3f66,#2e5b88);
+                        color:#e2f1f7;border:none;border-radius:50px;cursor:pointer;
+                        box-shadow:0 0 20px rgba(45,212,191,0.4);font-weight:bold;transition:transform 0.2s;"
                         onmouseover="this.style.transform='scale(1.1)'"
                         onmouseout ="this.style.transform='scale(1)'">
                         🔄 เริ่มกิจกรรมใหม่
@@ -127,7 +127,7 @@ function updateUI(showCount = false) {
         <h1 style="color:${tier.color};font-family:'Cinzel Decorative',serif;
                    font-size:clamp(26px,5.5vw,54px);margin:0;
                    text-shadow:0 0 25px ${tier.color}88;">${tier.name}</h1>
-        <p style="font-size:18px;color:#8aaa8a;">จำนวนรางวัล: ${tier.count}</p>`;
+        <p style="font-size:18px;color:#7fa6c7;">จำนวนรางวัล: ${tier.count}</p>`;
 
     document.getElementById('adminControls').style.display = 'block';
     if (showCount)
@@ -166,13 +166,13 @@ function triggerWish() {
         }).catch(err => console.error(err));
     }
 
-    playMysticalFogAnimation(displayWinners);
+    playDeepSeaTideAnimation(displayWinners);
 }
 
 /* =============================================
-   🔥 THEME B: MYSTICAL FOG / ECLIPSE TRANSITION (แอนิเมชันหมอกมนตรากลืนจอ)
+   🌊 THEME B: DEEP SEA TIDAL ECLIPSE (แอนิเมชันคลื่นน้ำซัดกลืนเต็มจอ)
    ============================================= */
-function playMysticalFogAnimation(winners) {
+function playDeepSeaTideAnimation(winners) {
     const tier = prizes[currentTier];
     const flash = document.getElementById('flashOverlay');
     const container = document.querySelector('.container');
@@ -184,20 +184,20 @@ function playMysticalFogAnimation(winners) {
     container.style.opacity = '0';
     histBtn.style.display   = 'none';
 
-    // 1. สั่งให้กลุ่มก้อนหมอกควันมหาเวทย์แผ่ซ่านเข้ามาถมดำเต็มจออย่างรวดเร็ว
-    targetFogAlpha = 1.0;
+    // 1. สั่งให้มวลคลื่นน้ำพรูเข้ามาถมปิดหน้าจอออโต้ช้าๆ พรีเมียม
+    targetTideAlpha = 1.0;
 
-    // 2. (t=1200ms) หมอกหนาทึบครอบคลุมสมบูรณ์ -> สั่งเปลี่ยนฉากหลังหลังม่านควันอย่างนุ่มนวล
+    // 2. (t=1200ms) มวลน้ำขึ้นหนาทึบ -> ดึงประมวลรายชื่อสุ่มโชว์บนบอร์ดหลังม่านน้ำ
     setTimeout(() => {
-        flash.style.background = '#020702';
-        flash.style.opacity    = '0.4';
+        flash.style.background = '#010611';
+        flash.style.opacity    = '0.45';
         
         showResults(winners, tier);
     }, 1200);
 
-    // 3. (t=2000ms) สลายก้อนหมอกออกช้าๆ อย่างหรูหราพรีเมียม เผยหน้าต่างรายชื่อคนโชคดี
+    // 3. (t=2000ms) สลายคลื่นน้ำพรูออก เผยบัตรคิวคนโชคดีเรืองแสงอร่ามตา
     setTimeout(() => {
-        targetFogAlpha = 0.0;
+        targetTideAlpha = 0.0;
         flash.style.opacity = '0';
         
         setTimeout(() => {
@@ -221,13 +221,13 @@ function showResults(winners, tier) {
         card.className = 'card';
         card.style.borderColor      = tier.color + '88';
         card.style.animationDelay   = `${index * 0.045}s`;
-        card.style.boxShadow        = `0 4px 15px rgba(0,0,0,0.5), 0 0 12px ${tier.color}22`;
+        card.style.boxShadow        = `0 4px 15px rgba(0,0,0,0.6), 0 0 12px ${tier.color}22`;
 
         let subInfoHTML = "";
         data.details.forEach(info => { subInfoHTML += `<div class="info-sub">${info}</div>`; });
 
         card.innerHTML = `
-            <div class="card-header" style="background:${tier.color}; color:#0a0a00;">
+            <div class="card-header" style="background:${tier.color}; color:#040914;">
                 ${data.id}
             </div>
             <div class="card-body">
@@ -263,7 +263,7 @@ function toggleHistory() {
     const activePrizes = prizes.filter(p => winnersHistory[p.name] && winnersHistory[p.name].length > 0);
 
     if (activePrizes.length === 0) {
-        list.innerHTML = `<p style="text-align:center;color:#5a8a5a;margin-top:50px;">ยังไม่มีผู้โชคดี</p>`;
+        list.innerHTML = `<p style="text-align:center;color:#43719c;margin-top:50px;">ยังไม่มีรายนามผู้รับพรแห่งวารี</p>`;
     } else {
         let tabsHtml    = `<div class="history-tabs" id="tabsContainer">`;
         let contentHtml = `<div class="history-content-wrapper">`;
@@ -320,7 +320,7 @@ function resetGame() {
 }
 
 /* =============================================
-   4. CANVAS — PREMIUM FIREFLIES & MYSTICAL FOG ENGINE
+   4. CANVAS — ETHEREAL SEA BUBBLES ENGINE (ระบบละอองฟองอากาศใต้สมุทร)
    ============================================= */
 const canvas = document.getElementById('starCanvas');
 const ctx    = canvas.getContext('2d');
@@ -333,49 +333,50 @@ function resize() {
 window.addEventListener('resize', resize); resize();
 
 /* ────────────────────────────────────────────
-   👑 CLASS: PREMIUM MAGIC FIREFLY (สโลว์ดริฟต์ลอยละมุน + หน้าชัดหลังเบลอ)
+   🫧 CLASS: ETHEREAL SEA BUBBLE (ฟองอากาศเวทมนตร์ลอยเอื่อยขึ้นข้างบน)
    ──────────────────────────────────────────── */
-class PremiumFirefly {
-    constructor() { this.reset(); }
+class SeaBubble {
+    constructor() { this.reset(); this.y = Math.random() * h; } // กระจายตัวนุ่มๆ ตั้งแต่เริ่ม
     reset() {
         this.x  = Math.random() * w;
-        this.y  = Math.random() * h;
+        this.y  = h + Math.random() * 40; // ไปเกิดใหม่ใต้ก้นจอ
+        
+        // 🔥 ควบคุมให้ฟองลอยขึ้นแนวดิ่ง (vy ติดลบ) ช้าๆ ละมุนมาก
         this.vx = (Math.random() - 0.5) * 0.15;
-        this.vy = (Math.random() - 0.5) * 0.15;
+        this.vy = -(Math.random() * 0.4 + 0.15); 
         
-        // มิติระยะลึก: สุ่มขนาดดวงเล็กพริบพราย ถึงดวงใหญ่เบลอหนาหนาหน้าจอ
-        this.r  = Math.random() * 2.5 + 0.6;
-        this.glowR    = this.r * (Math.random() * 5 + 6);
+        // ระยะตื้นลึกกึ่งโปร่งแสง
+        this.r  = Math.random() * 2.8 + 0.5;
+        this.glowR    = this.r * (Math.random() * 4 + 5);
         this.phase    = Math.random() * Math.PI * 2;
+        this.wobbleS  = Math.random() * 0.02 + 0.005;
         
-        // ค่อยๆ สว่างและวาบดับลงช้าช้า สไตล์ออร์แกนิก (Organic Breathing)
-        this.flickerS = Math.random() * 0.012 + 0.004;
-        
-        const palette = ['#a8ff3e','#e8ff78','#ffff88','#c8a84b','#65d4a0'];
+        const palette = ['#4db6ac','#80deea','#b2ebf2','#e0f7fa','#e0b84c'];
         this.color = palette[Math.floor(Math.random() * palette.length)];
     }
     update() {
-        this.phase += this.flickerS;
+        this.phase += this.wobbleS;
         this.brightness = (Math.sin(this.phase) + 1) / 2;
 
         if (isWarping) {
-            // จังหวะหมอกลงหนา ดึงทิศทางให้ลอยตัวหมุนเป็นเกลียวบาง ๆ
-            this.vx += Math.sin(this.phase * 0.2) * 0.015;
-            this.vy += Math.cos(this.phase * 0.2) * 0.015;
+            // จังหวะคลื่นซัด คลื่นจะเหวี่ยงฟองอากาศวนเป็นวงกลมใต้กระแสน้ำวน
+            this.vx += Math.sin(this.phase * 0.3) * 0.02;
+            this.vy -= 0.01; // เร่งความเร็วลอยตัวขึ้นอีกนิด
         } else {
-            this.vx += Math.sin(this.phase * 0.4) * 0.003;
-            this.vy += Math.cos(this.phase * 0.3) * 0.003;
-            this.vx *= 0.99; this.vy *= 0.99;
+            // โยกเยกส่ายซ้ายขวาตามกระแสน้ำเนียนๆ ออร์แกนิก
+            this.vx += Math.sin(this.phase * 0.5) * 0.005;
         }
         
         this.x += this.vx; this.y += this.vy;
+        
+        // หลุดขอบจอ -> รีเซ็ตไปเกิดใหม่ก้นมหาสมุทร
         if (this.x < -30) this.x = w + 30; if (this.x > w + 30) this.x = -30;
-        if (this.y < -30) this.y = h + 30; if (this.y > h + 30) this.y = -30;
+        if (this.y < -30) this.reset();
     }
     draw() {
-        const alpha = this.brightness * 0.82 + 0.18;
+        const alpha = this.brightness * 0.75 + 0.25;
         const gGrad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.glowR);
-        gGrad.addColorStop(0, this.color + Math.floor(alpha * 130).toString(16).padStart(2,'0'));
+        gGrad.addColorStop(0, this.color + Math.floor(alpha * 120).toString(16).padStart(2,'0'));
         gGrad.addColorStop(1, 'transparent');
         
         ctx.fillStyle = gGrad;
@@ -390,23 +391,22 @@ class PremiumFirefly {
 }
 
 /* ────────────────────────────────────────────
-   ☁️ CLASS: FOG PARTICLE (ระบบคำนวณก้อนควันมนตราป่าดิบชื้น)
+   🌊 CLASS: TIDE PARTICLE (มวลคลื่นวารีซัดปิดหน้าจอเมื่อกด Wish)
    ──────────────────────────────────────────── */
-class FogParticle {
+class TideParticle {
     constructor() {
         this.x = Math.random() * w;
         this.y = Math.random() * h;
-        this.vx = (Math.random() - 0.5) * 0.4;
-        this.vy = (Math.random() - 0.5) * 0.15;
-        this.baseRadius = Math.random() * 150 + 150;
+        this.vx = (Math.random() - 0.5) * 0.6;
+        this.vy = (Math.random() - 0.5) * 0.3;
+        this.baseRadius = Math.random() * 180 + 180;
         this.radius = this.baseRadius;
         this.phase = Math.random() * Math.PI * 2;
-        this.speedPhase = Math.random() * 0.01;
+        this.speedPhase = Math.random() * 0.015;
     }
     update() {
         this.phase += this.speedPhase;
-        // การขยายและหดตัวของควันเลียนแบบธรรมชาติ
-        this.radius = this.baseRadius + Math.sin(this.phase) * 30;
+        this.radius = this.baseRadius + Math.sin(this.phase) * 40;
         this.x += this.vx;
         this.y += this.vy;
 
@@ -417,14 +417,14 @@ class FogParticle {
     }
     draw(globalAlpha) {
         ctx.save();
-        ctx.globalAlpha = globalAlpha * 0.28; // คุมความนุ่มนวลเนื้อหมอกไม่ให้แข็งทื่อ
+        ctx.globalAlpha = globalAlpha * 0.32; 
         
-        let fGrad = ctx.createRadialGradient(this.x, this.y, this.radius * 0.1, this.x, this.y, this.radius);
-        fGrad.addColorStop(0, '#0a200a'); // สีแกนหมอกเขียวป่าดงดิบ
-        fGrad.addColorStop(0.5, '#1e1c0a'); // สีก้อนควันไอเวทมนตร์สีทองจางๆ
-        fGrad.addColorStop(1, 'transparent');
+        let tGrad = ctx.createRadialGradient(this.x, this.y, this.radius * 0.05, this.x, this.y, this.radius);
+        tGrad.addColorStop(0, '#020b18'); // แกนน้ำลึกทึบสีน้ำเงินเข้มข้น
+        tGrad.addColorStop(0.6, '#062347'); // ออร่าสีครามผิวน้ำ
+        tGrad.addColorStop(1, 'transparent');
         
-        ctx.fillStyle = fGrad;
+        ctx.fillStyle = tGrad;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2);
         ctx.fill();
@@ -432,15 +432,15 @@ class FogParticle {
     }
 }
 
-/* ── ระบบตั้งค่าสแตนด์บายฝูงหิ่งห้อยและกลุ่มหมอก ── */
-let fireflies = [];
+/* ── ระบบเซ็ตค่าแอนิเมชันฝูงฟองสบู่เวทมนตร์และคลื่นน้ำ ── */
+let seaBubbles = [];
 
-function initPremiumEngine() {
-    // หิ่งห้อย 150 ตัวเต็มระเบียบฉากลอยนุ่ม ๆ
-    fireflies = Array.from({length: 150}, () => new PremiumFirefly());
+function initOceanEngine() {
+    // ฟองอากาศ 160 ตัวหนานุ่ม ลอยพริ้วไหว
+    seaBubbles = Array.from({length: 160}, () => new SeaBubble());
     
-    // ตั้งไข่ก้อนหมอกควัน 20 ก้อนใหญ่กระจายสแตนด์บายรอบจอ
-    fogParticles = Array.from({length: 20}, () => new FogParticle());
+    // มวลกระแสน้ำวน 25 ลูกใหญ่ พร้อมถมดำบดบังฉากอย่างนิ่มนวล
+    waterTides = Array.from({length: 25}, () => new TideParticle());
 }
 
 /* =============================================
@@ -449,17 +449,17 @@ function initPremiumEngine() {
 function animate() {
     ctx.clearRect(0, 0, w, h);
 
-    // 1. สั่งรันคำนวณวาดหิ่งห้อยละมุนตาชั้นแรก
-    fireflies.forEach(f => { f.update(); f.draw(); });
+    // 1. วาดและประมวลผลฝูงฟองสบู่เวทมนตร์ชั้นลึกสุด
+    seaBubbles.forEach(b => { b.update(); b.draw(); });
 
-    // 2. คำนวณปรับแต่งความหนาแน่นกลุ่มก้อนหมอกควัน (Linear Interpolation)
-    fogAlpha += (targetFogAlpha - fogAlpha) * 0.06;
+    // 2. คำนวณความหนาแน่นตัวแปรระดับมวลน้ำวน
+    tideAlpha += (targetTideAlpha - tideAlpha) * 0.06;
 
-    // 3. สั่งวาดกลุ่มหมอกควันมหาเวทย์บดบังลอยโอบล้อมจอ
-    if (fogAlpha > 0.001) {
-        fogParticles.forEach(p => {
-            p.update();
-            p.draw(fogAlpha);
+    // 3. ปล่อยพลังมวลคลื่นวารีซัดสาดบดบังจอ
+    if (tideAlpha > 0.001) {
+        waterTides.forEach(t => {
+            t.update();
+            t.draw(tideAlpha);
         });
     }
 
