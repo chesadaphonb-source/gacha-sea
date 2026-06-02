@@ -56,7 +56,7 @@ window.onload = function () {
     animate();
 
     document.getElementById('setupContainer').style.display = 'flex';
-    document.getElementById('adminControls').style.display  = 'block';
+    document.getElementById('adminControls').style.display  = 'none';
     document.getElementById('resultControls').style.display = 'flex';
 };
 
