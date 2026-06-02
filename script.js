@@ -24,7 +24,7 @@ let waterTides = [];
 let tideAlpha = 0;
 let targetTideAlpha = 0;
 
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxYNML38mXJT-x_5ya7HXKh9ZuIt2yYpAc5FsR8rKjEWxtqm95GqSuBf72i61vXAHjIsA/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzYNML38mXJT-x_5ya7HXKh9ZuIt2yYpAc5FsR8rKjEWxtqm95GqSuBf72i61vXAHjIsA/exec";
 
 /* =============================================
    HELPER
@@ -55,9 +55,10 @@ window.onload = function () {
     initOceanEngine();
     animate();
 
+    // 🔥 เคลียร์เลเยอร์ใหม่: เปิดแค่กล่องทองใส่ CSV หน้าแรก ส่วนแผงควบคุมสุ่มอื่น ๆ สั่งซ่อนให้สนิทพรีเมียม
     document.getElementById('setupContainer').style.display = 'flex';
     document.getElementById('adminControls').style.display  = 'none';
-    document.getElementById('resultControls').style.display = 'flex';
+    document.getElementById('resultControls').style.display = 'none'; /* บังคับปิดดักบั๊กเบี้ยวตรงนี้มึง */
 };
 
 /* =============================================
@@ -184,10 +185,8 @@ function playDeepSeaTideAnimation(winners) {
     container.style.opacity = '0';
     histBtn.style.display   = 'none';
 
-    // 1. สั่งให้มวลคลื่นน้ำพรูเข้ามาถมปิดหน้าจอออโต้ช้าๆ พรีเมียม
     targetTideAlpha = 1.0;
 
-    // 2. (t=1200ms) มวลน้ำขึ้นหนาทึบ -> ดึงประมวลรายชื่อสุ่มโชว์บนบอร์ดหลังม่านน้ำ
     setTimeout(() => {
         flash.style.background = '#010611';
         flash.style.opacity    = '0.45';
@@ -195,7 +194,6 @@ function playDeepSeaTideAnimation(winners) {
         showResults(winners, tier);
     }, 1200);
 
-    // 3. (t=2000ms) สลายคลื่นน้ำพรูออก เผยบัตรคิวคนโชคดีเรืองแสงอร่ามตา
     setTimeout(() => {
         targetTideAlpha = 0.0;
         flash.style.opacity = '0';
@@ -237,10 +235,12 @@ function showResults(winners, tier) {
         grid.appendChild(card);
     });
     document.getElementById('resultScreen').style.display = 'flex';
+    document.getElementById('resultControls').style.display = 'flex'; /* เปิดแผงปุ่มตอนแสดงผลรางวัลเท่านั้น */
 }
 
 function closeResult() {
     document.getElementById('resultScreen').style.display  = 'none';
+    document.getElementById('resultControls').style.display = 'none'; /* สั่งซ่อนคืนเมื่อปิดหน้าบอร์ด */
     document.querySelector('.container').style.opacity     = '1';
     document.querySelector('.btn-history-toggle').style.display = 'block';
 }
@@ -320,7 +320,7 @@ function resetGame() {
 }
 
 /* =============================================
-   4. CANVAS — ETHEREAL SEA BUBBLES ENGINE (ระบบละอองฟองอากาศใต้สมุทร)
+   4. CANVAS — ETHEREAL SEA BUBBLES ENGINE
    ============================================= */
 const canvas = document.getElementById('starCanvas');
 const ctx    = canvas.getContext('2d');
@@ -333,19 +333,15 @@ function resize() {
 window.addEventListener('resize', resize); resize();
 
 /* ────────────────────────────────────────────
-   🫧 CLASS: ETHEREAL SEA BUBBLE (ฟองอากาศเวทมนตร์ลอยเอื่อยขึ้นข้างบน)
+   🫧 CLASS: ETHEREAL SEA BUBBLE
    ──────────────────────────────────────────── */
 class SeaBubble {
-    constructor() { this.reset(); this.y = Math.random() * h; } // กระจายตัวนุ่มๆ ตั้งแต่เริ่ม
+    constructor() { this.reset(); this.y = Math.random() * h; }
     reset() {
         this.x  = Math.random() * w;
-        this.y  = h + Math.random() * 40; // ไปเกิดใหม่ใต้ก้นจอ
-        
-        // 🔥 ควบคุมให้ฟองลอยขึ้นแนวดิ่ง (vy ติดลบ) ช้าๆ ละมุนมาก
+        this.y  = h + Math.random() * 40;
         this.vx = (Math.random() - 0.5) * 0.15;
         this.vy = -(Math.random() * 0.4 + 0.15); 
-        
-        // ระยะตื้นลึกกึ่งโปร่งแสง
         this.r  = Math.random() * 2.8 + 0.5;
         this.glowR    = this.r * (Math.random() * 4 + 5);
         this.phase    = Math.random() * Math.PI * 2;
@@ -359,17 +355,13 @@ class SeaBubble {
         this.brightness = (Math.sin(this.phase) + 1) / 2;
 
         if (isWarping) {
-            // จังหวะคลื่นซัด คลื่นจะเหวี่ยงฟองอากาศวนเป็นวงกลมใต้กระแสน้ำวน
             this.vx += Math.sin(this.phase * 0.3) * 0.02;
-            this.vy -= 0.01; // เร่งความเร็วลอยตัวขึ้นอีกนิด
+            this.vy -= 0.01;
         } else {
-            // โยกเยกส่ายซ้ายขวาตามกระแสน้ำเนียนๆ ออร์แกนิก
             this.vx += Math.sin(this.phase * 0.5) * 0.005;
         }
         
         this.x += this.vx; this.y += this.vy;
-        
-        // หลุดขอบจอ -> รีเซ็ตไปเกิดใหม่ก้นมหาสมุทร
         if (this.x < -30) this.x = w + 30; if (this.x > w + 30) this.x = -30;
         if (this.y < -30) this.reset();
     }
@@ -391,7 +383,7 @@ class SeaBubble {
 }
 
 /* ────────────────────────────────────────────
-   🌊 CLASS: TIDE PARTICLE (มวลคลื่นวารีซัดปิดหน้าจอเมื่อกด Wish)
+   🌊 CLASS: TIDE PARTICLE
    ──────────────────────────────────────────── */
 class TideParticle {
     constructor() {
@@ -420,8 +412,8 @@ class TideParticle {
         ctx.globalAlpha = globalAlpha * 0.32; 
         
         let tGrad = ctx.createRadialGradient(this.x, this.y, this.radius * 0.05, this.x, this.y, this.radius);
-        tGrad.addColorStop(0, '#020b18'); // แกนน้ำลึกทึบสีน้ำเงินเข้มข้น
-        tGrad.addColorStop(0.6, '#062347'); // ออร่าสีครามผิวน้ำ
+        tGrad.addColorStop(0, '#020b18'); 
+        tGrad.addColorStop(0.6, '#062347'); 
         tGrad.addColorStop(1, 'transparent');
         
         ctx.fillStyle = tGrad;
@@ -432,14 +424,10 @@ class TideParticle {
     }
 }
 
-/* ── ระบบเซ็ตค่าแอนิเมชันฝูงฟองสบู่เวทมนตร์และคลื่นน้ำ ── */
 let seaBubbles = [];
 
 function initOceanEngine() {
-    // ฟองอากาศ 160 ตัวหนานุ่ม ลอยพริ้วไหว
     seaBubbles = Array.from({length: 160}, () => new SeaBubble());
-    
-    // มวลกระแสน้ำวน 25 ลูกใหญ่ พร้อมถมดำบดบังฉากอย่างนิ่มนวล
     waterTides = Array.from({length: 25}, () => new TideParticle());
 }
 
@@ -449,13 +437,10 @@ function initOceanEngine() {
 function animate() {
     ctx.clearRect(0, 0, w, h);
 
-    // 1. วาดและประมวลผลฝูงฟองสบู่เวทมนตร์ชั้นลึกสุด
     seaBubbles.forEach(b => { b.update(); b.draw(); });
 
-    // 2. คำนวณความหนาแน่นตัวแปรระดับมวลน้ำวน
     tideAlpha += (targetTideAlpha - tideAlpha) * 0.06;
 
-    // 3. ปล่อยพลังมวลคลื่นวารีซัดสาดบดบังจอ
     if (tideAlpha > 0.001) {
         waterTides.forEach(t => {
             t.update();
