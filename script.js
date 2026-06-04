@@ -1,5 +1,5 @@
 /* =========================================================
-   OCEAN WISH SYSTEM — ENGINE SCRIPT (THE ABYSSAL TREASURE UPDATE)
+   OCEAN WISH SYSTEM — ENGINE SCRIPT (HYPER BUBBLE & 3D CARD UPDATE)
    ========================================================= */
 
 /* --- Configuration --- */
@@ -20,10 +20,10 @@ let currentTierColor = "#65d4a0";
 let winnersHistory = {};
 
 // 📦 แอนิเมชันสเตตกล่องสมบัติบาดาล
-let treasureState = "none"; // none -> bubble_burst -> chest_appear -> chest_open -> done
+let treasureState = "none"; 
 let treasureTimer = 0;
-let chestOpenProgress = 0; // 0 (ปิด) ถึง 1 (เปิดสุด)
-let burstBubbles = []; // ถังเก็บฟองอากาศระเบิดตอนกดสุ่ม
+let chestOpenProgress = 0; 
+let burstBubbles = []; 
 
 // เอ็นจิ้นแสงจันทร์และแพลงก์ตอนเวทมนตร์ (Idle State)
 let seaBubbles = [];
@@ -172,12 +172,11 @@ function triggerWish() {
         }).catch(err => console.error(err));
     }
 
-    // 🌊 สตาร์ทสเต็ปแอนิเมชันเปิดกล่องสมบัติกาชาเจ้าสมุทร
     playAbyssalChestAnimation(displayWinners);
 }
 
 /* =========================================================
-   📦 THEME B: ABYSSAL TREASURE OPENING (ระบบแอนิเมชันกล่องสมบัติสระเปิดวิบวับ)
+   📦 THEME B: ABYSSAL TREASURE OPENING (ระบบแอนิเมชันกล่องสมบัติ)
    ========================================================= */
 function playAbyssalChestAnimation(winners) {
     const tier = prizes[currentTier];
@@ -188,49 +187,47 @@ function playAbyssalChestAnimation(winners) {
     isWarping = true;
     currentTierColor = tier.color;
 
-    // 1. ซ่อน UI ควบคุมทั้งหมดชั่วคราว ดึงความสนใจเข้าสู่ Canvas
     container.style.opacity = '0';
     histBtn.style.display   = 'none';
 
-    // 2. สั่งเริ่มระบบพ่นระเบิดฟองอากาศจากใต้จอขึ้นมาถมทึบ
     treasureState = "bubble_burst";
     treasureTimer = 0;
     chestOpenProgress = 0;
     burstBubbles = [];
 
-    // สร้างเม็ดฟองอากาศพุ่งทะลักความเร็วสูง 250 เม็ดปะทุขึ้นแนวดิ่ง
-    for (let i = 0; i < 250; i++) {
+    // 🔥 [อัปเกรด] เพิ่มกระหน่ำฝูงฟองสบู่ระเบิดเป็น 500 เม็ดสะใจเต็มพิกัดจอ!
+    for (let i = 0; i < 500; i++) {
+        let size = Math.random() * 6 + 2;
         burstBubbles.push({
             x: Math.random() * w,
-            y: h + Math.random() * 200,
-            r: Math.random() * 4 + 2,
-            vy: -(Math.random() * 12 + 6), // พุ่งจิ๊ดจ๊าดกระชากอารมณ์
-            vx: (Math.random() - 0.5) * 2,
-            alpha: Math.random() * 0.6 + 0.4
+            y: h + Math.random() * 300,
+            r: size,
+            vy: -(Math.random() * 14 + 7), // เร่งความเร็วพุ่งปรี๊ดดด
+            vx: (Math.random() - 0.5) * 3,
+            alpha: Math.random() * 0.7 + 0.3,
+            blur: size > 6 ? 2 : 0 // สุ่มมิติเบลอเลนส์ระยะตื้นลึก
         });
     }
 
-    // 3. จังหวะเปลี่ยนถ่ายหน้าบอร์ดผู้โชคดี (หลังจากเปิดฝากล่องสมบัติเรืองแสง)
-    // t=1200ms ควันบังจอ -> สเตตกล่องปรากฏ -> t=2400ms กล่องเปิดแสงวาบ -> t=3400ms สลัดจอโชว์รายชื่อ
     setTimeout(() => {
         treasureState = "chest_appear";
-    }, 1000);
+    }, 1200);
 
     setTimeout(() => {
         treasureState = "chest_open";
-    }, 2400);
+    }, 2600);
 
     setTimeout(() => {
         flash.style.background = '#010611';
-        flash.style.opacity    = '0.6';
+        flash.style.opacity    = '0.7';
         showResults(winners, tier);
-    }, 4200);
+    }, 4400);
 
     setTimeout(() => {
         treasureState = "none";
         flash.style.opacity = '0';
         isWarping = false;
-    }, 5000);
+    }, 5200);
 }
 
 /* =============================================
@@ -246,23 +243,28 @@ function showResults(winners, tier) {
         const data = getDisplayData(w);
         const card = document.createElement('div');
         card.className = 'card';
-        card.style.borderColor      = tier.color + '88';
+        card.style.borderColor      = tier.color + 'aa';
         
-        // 🔮 สั่งแอนิเมชันการ์ดให้ค่อย ๆ "เด้งทะยานออกมาทีละใบ" (PopIn Animation) ตามที่มึงขอเป๊ะ ๆ
-        card.style.animationDelay   = `${index * 0.05}s`;
-        card.style.boxShadow        = `0 4px 15px rgba(0,0,0,0.6), 0 0 15px ${tier.color}33`;
+        // 🔮 [อัปเกรด] สั่งแอนิเมชันให้การ์ด 3D ค่อย ๆ ทยอยเด้งกระจายมุมออกมาอย่างพรีเมียม
+        card.style.animationDelay   = `${index * 0.06}s`;
+        
+        // ผูกสีนีออนเรืองแสงใต้แผ่นป้ายตามเกรดรางวัลตรงตามภาพ Ref เป๊ะ ๆ
+        card.style.setProperty('--glow-color', tier.color);
+        card.style.boxShadow        = `0 15px 35px rgba(0,0,0,0.8), 0 0 25px ${tier.color}33`;
 
         let subInfoHTML = "";
         data.details.forEach(info => { subInfoHTML += `<div class="info-sub">${info}</div>`; });
 
         card.innerHTML = `
-            <div class="card-header" style="background:${tier.color}; color:#040914;">
+            <div class="card-glow-line" style="background:${tier.color}"></div>
+            <div class="card-header" style="background: linear-gradient(135deg, ${tier.color} 0%, #040914 140%); color:#040914;">
                 ${data.id}
             </div>
             <div class="card-body">
-                <div class="info-main" style="color:${tier.color};">${data.name}</div>
+                <div class="info-main" style="color:${tier.color}; text-shadow: 0 0 10px ${tier.color}44;">${data.name}</div>
                 ${subInfoHTML}
-            </div>`;
+            </div>
+            <div class="card-shine-overlay"></div>`;
         grid.appendChild(card);
     });
     document.getElementById('resultScreen').style.display = 'flex';
@@ -351,7 +353,7 @@ function resetGame() {
 }
 
 /* =========================================================
-   4. CANVAS — ETHEREAL MOONLIGHT & CHEST GRAPHICS ENGINE
+   4. CANVAS — ETHEREAL MOONLIGHT ENGINE
    ========================================================= */
 const canvas = document.getElementById('starCanvas');
 const ctx    = canvas.getContext('2d');
@@ -363,9 +365,6 @@ function resize() {
 }
 window.addEventListener('resize', resize); resize();
 
-/* ────────────────────────────────────────────
-   🌙 CLASS: VOLUMETRIC MOONLIGHT RAY
-   ──────────────────────────────────────────── */
 class MoonlightRay {
     constructor() {
         this.x = Math.random() * w;
@@ -402,9 +401,6 @@ class MoonlightRay {
     }
 }
 
-/* ────────────────────────────────────────────
-   🪸 CLASS: BIOLUMINESCENT PLANKTON
-   ──────────────────────────────────────────── */
 class BioPlankton {
     constructor() { this.reset(); this.y = Math.random() * h; }
     reset() {
@@ -444,9 +440,6 @@ class BioPlankton {
     }
 }
 
-/* ────────────────────────────────────────────
-   🫧 CLASS: ETHEREAL SEA BUBBLE
-   ──────────────────────────────────────────── */
 class SeaBubble {
     constructor() { this.reset(); this.y = Math.random() * h; }
     reset() {
@@ -469,19 +462,15 @@ function initOceanEngine() {
     planktons  = Array.from({length: 90}, () => new BioPlankton());
 }
 
-/* ────────────────────────────────────────────
-   🔱 VECTOR GRAPHICS: วาดกล่องสมบัติเจ้าสมุทรสด ๆ บนคานวาส
-   ──────────────────────────────────────────── */
 function drawVectorChest(cx, cy, scale, openProgress) {
-    let cw = 160 * scale; // ความกว้างกล่อง
-    let ch = 100 * scale; // ความสูงฐานกล่อง
-    let lidH = 60 * scale; // ความสูงฝากล่อง
+    let cw = 160 * scale; 
+    let ch = 100 * scale; 
+    let lidH = 60 * scale; 
 
     ctx.save();
     ctx.shadowBlur = 25;
     ctx.shadowColor = currentTierColor;
 
-    // 1. วาดตัวฐานกล่องสมบัติ (ขอบทองครามน้ำลึก)
     ctx.fillStyle = "#0c1b33";
     ctx.strokeStyle = "#e0b84c";
     ctx.lineWidth = 4 * scale;
@@ -489,17 +478,15 @@ function drawVectorChest(cx, cy, scale, openProgress) {
     ctx.rect(cx - cw/2, cy, cw, ch);
     ctx.fill(); ctx.stroke();
 
-    // ลายเหล็กดัดทองคาดฐานกล่องสมบัติ
     ctx.fillStyle = "#e0b84c";
     ctx.fillRect(cx - cw/2 + 15*scale, cy, 12*scale, ch);
     ctx.fillRect(cx + cw/2 - 27*scale, cy, 12*scale, ch);
 
-    // 2. เอฟเฟกต์แสงสาดส่องเรืองรองทะลุออกมาเมื่อเปิดฝา (Glow Leak)
     if (openProgress > 0.05) {
         let opacity = Math.min(openProgress * 0.8, 0.8);
         let glowGrad = ctx.createRadialGradient(cx, cy - (lidH * openProgress), 10, cx, cy - (lidH * openProgress), 200 * scale);
         glowGrad.addColorStop(0, '#ffffff');
-        glowGrad.addColorStop(0.2, currentTierColor); // เรืองแสงตามสีระดับรางวัลเป๊ะ ๆ!
+        glowGrad.addColorStop(0.2, currentTierColor); 
         glowGrad.addColorStop(0.6, `rgba(3, 212, 191, 0.2)`);
         glowGrad.addColorStop(1, 'transparent');
 
@@ -512,12 +499,10 @@ function drawVectorChest(cx, cy, scale, openProgress) {
         ctx.restore();
     }
 
-    // 3. วาดฝากล่องสมบัติ (คำนวณตำแหน่งยกลอยขึ้นและเอียงมุมสะบัดตาม OpenProgress)
     ctx.save();
-    let lidYOffset = cy - (lidH * openProgress * 1.1); // ฝาลอยขึ้นข้างบน
+    let lidYOffset = cy - (lidH * openProgress * 1.1); 
     ctx.translate(cx, lidYOffset);
     
-    // วาดทรงโค้งฝากล่องสมบัติโบราณ
     ctx.fillStyle = "#0f2547";
     ctx.strokeStyle = "#e0b84c";
     ctx.beginPath();
@@ -527,26 +512,21 @@ function drawVectorChest(cx, cy, scale, openProgress) {
     ctx.closePath();
     ctx.fill(); ctx.stroke();
 
-    // ขอบทองประดับฝากล่อง
     ctx.fillStyle = "#e0b84c";
     ctx.beginPath();
     ctx.arc(0, 0, cw/2, Math.PI, Math.PI + 0.2, false);
     ctx.lineTo(0, 5*scale);
     ctx.closePath(); ctx.fill();
-
     ctx.restore();
 
-    // 4. วาดแม่กุญแจตราตรีศูลตรงกึ่งกลางกล่อง
     ctx.fillStyle = "#b38f2b";
     ctx.strokeStyle = "#ffffff";
     ctx.beginPath();
     ctx.arc(cx, cy + ch*0.2, 14 * scale, 0, Math.PI*2);
     ctx.fill(); ctx.stroke();
     
-    // ช่องรูกุญแจตรีศูล
     ctx.fillStyle = "#000000";
     ctx.fillRect(cx - 2*scale, cy + ch*0.16, 4*scale, 10*scale);
-
     ctx.restore();
 }
 
@@ -556,36 +536,37 @@ function drawVectorChest(cx, cy, scale, openProgress) {
 function animate() {
     ctx.clearRect(0, 0, w, h);
 
-    // 1. วาดระนาบพื้นหลัง: ลำแสงจันทร์ + ฝูงแพลงก์ตอนเรืองแสงคราม
     moonRays.forEach(r => { r.update(); r.draw(); });
     planktons.forEach(p => { p.update(); p.draw(); });
     seaBubbles.forEach(b => { b.update(); b.draw(); });
 
-    // 2. รันมหาเวทย์ Logic ตู้กาชากล่องสมบัติ (เมื่อกดสุ่มรางวัล)
     if (treasureState !== "none") {
-        
-        // สเตตที่ A: ฝูงฟองน้ำระเบิดพุ่งจากข้างล่างขึ้นข้างบน
         if (treasureState === "bubble_burst" || treasureState === "chest_appear" || treasureState === "chest_open") {
             burstBubbles.forEach(b => {
                 b.y += b.vy;
                 b.x += b.vx;
+                
+                // เอฟเฟกต์เบลอเลนส์ระยะลึกสำหรับฟองสบู่ลูกใหญ่
+                if (b.blur > 0) {
+                    ctx.save();
+                    ctx.filter = `blur(${b.blur}px)`;
+                }
+                
                 ctx.beginPath();
                 ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
                 ctx.fillStyle = `rgba(224, 242, 254, ${b.alpha})`;
                 ctx.fill();
+                
+                if (b.blur > 0) ctx.restore();
             });
         }
 
-        // สเตตที่ B: กล่องสมบัติเจ้าสมุทรปรากฏตัวกลางวงจอคอม
         if (treasureState === "chest_appear" || treasureState === "chest_open") {
             let chestX = w / 2;
             let chestY = h / 2 - 30;
-            
             if (treasureState === "chest_open") {
-                // ค่อย ๆ กางเปิดฝากล่องสมบัติออกช้า ๆ ดึงอารมณ์ร่วม
                 if (chestOpenProgress < 1.0) chestOpenProgress += 0.025;
             }
-            
             drawVectorChest(chestX, chestY, 1.2, chestOpenProgress);
         }
     }
