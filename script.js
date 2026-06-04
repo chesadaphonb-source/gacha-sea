@@ -1,5 +1,5 @@
 /* =========================================================
-   OCEAN WISH SYSTEM — ENGINE SCRIPT (MOONLIGHT & PLANKTON UPDATE)
+   OCEAN WISH SYSTEM — ENGINE SCRIPT (THE ABYSSAL TREASURE UPDATE)
    ========================================================= */
 
 /* --- Configuration --- */
@@ -19,12 +19,13 @@ let isWarping      = false;
 let currentTierColor = "#65d4a0";
 let winnersHistory = {};
 
-// ระบบมวลคลื่นน้ำแผ่ซ่านครอบคลุมหน้าจอ (Deep Sea Tidal Engine)
-let waterTides = [];
-let tideAlpha = 0;
-let targetTideAlpha = 0;
+// 📦 แอนิเมชันสเตตกล่องสมบัติบาดาล
+let treasureState = "none"; // none -> bubble_burst -> chest_appear -> chest_open -> done
+let treasureTimer = 0;
+let chestOpenProgress = 0; // 0 (ปิด) ถึง 1 (เปิดสุด)
+let burstBubbles = []; // ถังเก็บฟองอากาศระเบิดตอนกดสุ่ม
 
-// เอ็นจิ้นแสงจันทร์และแพลงก์ตอนเวทมนตร์
+// เอ็นจิ้นแสงจันทร์และแพลงก์ตอนเวทมนตร์ (Idle State)
 let seaBubbles = [];
 let planktons = [];
 let moonRays = [];
@@ -171,13 +172,14 @@ function triggerWish() {
         }).catch(err => console.error(err));
     }
 
-    playDeepSeaTideAnimation(displayWinners);
+    // 🌊 สตาร์ทสเต็ปแอนิเมชันเปิดกล่องสมบัติกาชาเจ้าสมุทร
+    playAbyssalChestAnimation(displayWinners);
 }
 
-/* =============================================
-   🌊 THEME B: DEEP SEA TIDAL ECLIPSE (แอนิเมชันคลื่นน้ำซัดกลืนเต็มจอ)
-   ============================================= */
-function playDeepSeaTideAnimation(winners) {
+/* =========================================================
+   📦 THEME B: ABYSSAL TREASURE OPENING (ระบบแอนิเมชันกล่องสมบัติสระเปิดวิบวับ)
+   ========================================================= */
+function playAbyssalChestAnimation(winners) {
     const tier = prizes[currentTier];
     const flash = document.getElementById('flashOverlay');
     const container = document.querySelector('.container');
@@ -186,26 +188,49 @@ function playDeepSeaTideAnimation(winners) {
     isWarping = true;
     currentTierColor = tier.color;
 
+    // 1. ซ่อน UI ควบคุมทั้งหมดชั่วคราว ดึงความสนใจเข้าสู่ Canvas
     container.style.opacity = '0';
     histBtn.style.display   = 'none';
 
-    targetTideAlpha = 1.0;
+    // 2. สั่งเริ่มระบบพ่นระเบิดฟองอากาศจากใต้จอขึ้นมาถมทึบ
+    treasureState = "bubble_burst";
+    treasureTimer = 0;
+    chestOpenProgress = 0;
+    burstBubbles = [];
+
+    // สร้างเม็ดฟองอากาศพุ่งทะลักความเร็วสูง 250 เม็ดปะทุขึ้นแนวดิ่ง
+    for (let i = 0; i < 250; i++) {
+        burstBubbles.push({
+            x: Math.random() * w,
+            y: h + Math.random() * 200,
+            r: Math.random() * 4 + 2,
+            vy: -(Math.random() * 12 + 6), // พุ่งจิ๊ดจ๊าดกระชากอารมณ์
+            vx: (Math.random() - 0.5) * 2,
+            alpha: Math.random() * 0.6 + 0.4
+        });
+    }
+
+    // 3. จังหวะเปลี่ยนถ่ายหน้าบอร์ดผู้โชคดี (หลังจากเปิดฝากล่องสมบัติเรืองแสง)
+    // t=1200ms ควันบังจอ -> สเตตกล่องปรากฏ -> t=2400ms กล่องเปิดแสงวาบ -> t=3400ms สลัดจอโชว์รายชื่อ
+    setTimeout(() => {
+        treasureState = "chest_appear";
+    }, 1000);
+
+    setTimeout(() => {
+        treasureState = "chest_open";
+    }, 2400);
 
     setTimeout(() => {
         flash.style.background = '#010611';
-        flash.style.opacity    = '0.45';
-        
+        flash.style.opacity    = '0.6';
         showResults(winners, tier);
-    }, 1200);
+    }, 4200);
 
     setTimeout(() => {
-        targetTideAlpha = 0.0;
+        treasureState = "none";
         flash.style.opacity = '0';
-        
-        setTimeout(() => {
-            isWarping = false;
-        }, 800);
-    }, 2000);
+        isWarping = false;
+    }, 5000);
 }
 
 /* =============================================
@@ -222,8 +247,10 @@ function showResults(winners, tier) {
         const card = document.createElement('div');
         card.className = 'card';
         card.style.borderColor      = tier.color + '88';
-        card.style.animationDelay   = `${index * 0.045}s`;
-        card.style.boxShadow        = `0 4px 15px rgba(0,0,0,0.6), 0 0 12px ${tier.color}22`;
+        
+        // 🔮 สั่งแอนิเมชันการ์ดให้ค่อย ๆ "เด้งทะยานออกมาทีละใบ" (PopIn Animation) ตามที่มึงขอเป๊ะ ๆ
+        card.style.animationDelay   = `${index * 0.05}s`;
+        card.style.boxShadow        = `0 4px 15px rgba(0,0,0,0.6), 0 0 15px ${tier.color}33`;
 
         let subInfoHTML = "";
         data.details.forEach(info => { subInfoHTML += `<div class="info-sub">${info}</div>`; });
@@ -324,7 +351,7 @@ function resetGame() {
 }
 
 /* =========================================================
-   4. CANVAS — ETHEREAL MOONLIGHT & PLANKTON BIO-ENGINE
+   4. CANVAS — ETHEREAL MOONLIGHT & CHEST GRAPHICS ENGINE
    ========================================================= */
 const canvas = document.getElementById('starCanvas');
 const ctx    = canvas.getContext('2d');
@@ -337,36 +364,31 @@ function resize() {
 window.addEventListener('resize', resize); resize();
 
 /* ────────────────────────────────────────────
-   🌙 CLASS: VOLUMETRIC MOONLIGHT RAY (ลำแสงจันทร์สีนวลครามส่ายเอื่อย ๆ)
+   🌙 CLASS: VOLUMETRIC MOONLIGHT RAY
    ──────────────────────────────────────────── */
 class MoonlightRay {
     constructor() {
-        this.x = Math.random() * w; // จุดตั้งต้นบนผิวน้ำ
-        this.width = Math.random() * 90 + 40; // ความหนาของลำแสง
-        this.angle = (Math.random() * 5 + 15) * (Math.PI / 180); // ปรับองศาเอียงเฉียงพรีเมียม
+        this.x = Math.random() * w;
+        this.width = Math.random() * 90 + 40;
+        this.angle = (Math.random() * 5 + 15) * (Math.PI / 180);
         this.phase = Math.random() * Math.PI * 2;
-        this.speed = Math.random() * 0.003 + 0.001; // ความเร็วการแกว่ง (ช้าจัดสไตล์กล่อมมนตรา)
-        this.alphaMax = Math.random() * 0.12 + 0.05; // ความสว่างสูงสุดไม่แย่งซีนตัวหนังสือ
+        this.speed = Math.random() * 0.003 + 0.001;
+        this.alphaMax = Math.random() * 0.12 + 0.05;
     }
-    update() {
-        this.phase += this.speed;
-    }
+    update() { this.phase += this.speed; }
     draw() {
-        // คำนวณองศาขยับส่ายโยกเยกเบา ๆ ตามแรงคลื่นผิวน้ำ
         let currentAngle = this.angle + Math.sin(this.phase) * 0.03;
         let currentAlpha = this.alphaMax * (0.7 + Math.sin(this.phase * 2) * 0.3);
 
         ctx.save();
-        ctx.globalCompositeOperation = 'screen'; // ผสมแสงให้นุ่มนวลกลืนไปกับรูปภาพ
-
-        // สร้าง Gradient แนวทะแยงตามทิศทางแสงจันทร์นวลคราม
+        ctx.globalCompositeOperation = 'screen';
         let length = h * 1.5;
         let targetX = this.x + Math.sin(currentAngle) * length;
         let targetY = Math.cos(currentAngle) * length;
 
         let rayGrad = ctx.createLinearGradient(this.x, 0, targetX, targetY);
-        rayGrad.addColorStop(0, `rgba(165, 243, 252, ${currentAlpha})`); // สีนวลนภาดวงจันทร์ท่อนบน
-        rayGrad.addColorStop(0.4, `rgba(56, 189, 248, ${currentAlpha * 0.4})`); // สีฟ้าน้ำทะเลลึกช่วงกลาง
+        rayGrad.addColorStop(0, `rgba(165, 243, 252, ${currentAlpha})`);
+        rayGrad.addColorStop(0.4, `rgba(56, 189, 248, ${currentAlpha * 0.4})`);
         rayGrad.addColorStop(1, 'transparent');
 
         ctx.fillStyle = rayGrad;
@@ -375,148 +397,157 @@ class MoonlightRay {
         ctx.lineTo(this.x + this.width / 2, 0);
         ctx.lineTo(targetX + this.width, targetY);
         ctx.lineTo(targetX - this.width, targetY);
-        ctx.closePath();
-        ctx.fill();
-
+        ctx.closePath(); ctx.fill();
         ctx.restore();
     }
 }
 
 /* ────────────────────────────────────────────
-   🪸 CLASS: BIOLUMINESCENT PLANKTON (ฝูงแพลงก์ตอนเรืองแสง ขยับพริ้วตามแพทเทิร์น)
+   🪸 CLASS: BIOLUMINESCENT PLANKTON
    ──────────────────────────────────────────── */
 class BioPlankton {
-    constructor() {
-        this.reset();
-        this.y = Math.random() * h; // กระจายตัวนุ่มนวลตอนรันเว็บ
-    }
+    constructor() { this.reset(); this.y = Math.random() * h; }
     reset() {
-        // แพทเทิร์นชีวภาพ: เกิดจากโซนแนวปะการังฝั่งซ้ายล่าง (X: 0 - 30%, Y: 70% - 95%)
         this.x = Math.random() * (w * 0.3);
         this.y = h * (0.7 + Math.random() * 0.25);
-        
-        // 🔮 สั่งเคลื่อนที่ด้วย Pattern ลอยพริ้วโค้งเอื่อยเฉียงขวาขึ้นบน (ตามกระแสน้ำวนในภาพ)
         this.baseVx = Math.random() * 0.2 + 0.15;
         this.baseVy = -(Math.random() * 0.3 + 0.1);
-        this.vx = this.baseVx;
-        this.vy = this.baseVy;
-
-        this.r = Math.random() * 1.8 + 0.6; // ขนาดละอองแพลงก์ตอนจิ๋ว
+        this.vx = this.baseVx; this.vy = this.baseVy;
+        this.r = Math.random() * 1.8 + 0.6;
         this.glowR = this.r * (Math.random() * 5 + 4);
-        
         this.phase = Math.random() * Math.PI * 2;
         this.wobbleSpeed = Math.random() * 0.01 + 0.005;
-        
-        // พาเลทสีสปอร์เรืองแสงอวตาร (ฟ้านีออน / เขียวมินต์ปะการัง / อความารีน)
         const colors = ['#2dd4bf', '#06b6d4', '#38bdf8', '#a5f3fc', '#34d399'];
         this.color = colors[Math.floor(Math.random() * colors.length)];
-        
-        this.life = 1.0;
-        this.decay = Math.random() * 0.0012 + 0.0005; // ค่อย ๆ แก่ตัวและสลายไป
+        this.life = 1.0; this.decay = Math.random() * 0.0012 + 0.0005;
     }
     update() {
-        this.phase += this.wobbleSpeed;
-        this.life -= this.decay;
-
-        // 🌊 แพทเทิร์นคลื่นไหลโยกตามลูปคณิตศาสตร์ออร์แกนิก (ขยับพริ้วไหวเป็นกลุ่มก้อน)
+        this.phase += this.wobbleSpeed; this.life -= this.decay;
         this.vx = this.baseVx + Math.sin(this.phase) * 0.15;
         this.vy = this.baseVy + Math.cos(this.phase * 0.5) * 0.1;
-
-        this.x += this.vx;
-        this.y += this.vy;
-
-        // ถ้าหลุดขอบจอหรือแก่ตาย -> รีเซ็ตไปเกิดใหม่ที่แนวปะการังซ้ายล่างออโต้
-        if (this.x > w + 20 || this.y < -20 || this.life <= 0) {
-            this.reset();
-        }
+        this.x += this.vx; this.y += this.vy;
+        if (this.x > w + 20 || this.y < -20 || this.life <= 0) this.reset();
     }
     draw() {
         if (this.life <= 0) return;
-        
-        // คำนวณความสว่างกระพริบวูบวาบเบา ๆ สไตล์ชีวภาพ (Bioluminescence)
         let pulseAlpha = (Math.sin(this.phase * 1.5) + 1) / 2;
         let finalAlpha = pulseAlpha * this.life * 0.8;
 
-        // 1. วาดแสงออร่าสะท้อนเรืองแสงรอบตัวแพลงก์ตอน
         let gGrad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.glowR);
         gGrad.addColorStop(0, this.color + Math.floor(finalAlpha * 140).toString(16).padStart(2,'0'));
         gGrad.addColorStop(1, 'transparent');
         
-        ctx.save();
-        ctx.globalCompositeOperation = 'screen';
-        ctx.fillStyle = gGrad;
-        ctx.beginPath(); ctx.arc(this.x, this.y, this.glowR, 0, Math.PI*2); ctx.fill();
-
-        // 2. วาดแกนกลางละอองแสงแพลงก์ตอนดวงจิ๋วขาวเรืองแสง
-        ctx.globalAlpha = finalAlpha;
-        ctx.fillStyle   = '#ffffff';
-        ctx.beginPath(); ctx.arc(this.x, this.y, this.r, 0, Math.PI*2); ctx.fill();
+        ctx.save(); ctx.globalCompositeOperation = 'screen';
+        ctx.fillStyle = gGrad; ctx.beginPath(); ctx.arc(this.x, this.y, this.glowR, 0, Math.PI*2); ctx.fill();
+        ctx.globalAlpha = finalAlpha; ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(this.x, this.y, this.r, 0, Math.PI*2); ctx.fill();
         ctx.restore();
     }
 }
 
 /* ────────────────────────────────────────────
-   🫧 CLASS: ETHEREAL SEA BUBBLE (ฟองอากาศโปร่งแสงดั้งเดิมคอยเสริมมิติ)
+   🫧 CLASS: ETHEREAL SEA BUBBLE
    ──────────────────────────────────────────── */
 class SeaBubble {
     constructor() { this.reset(); this.y = Math.random() * h; }
     reset() {
-        this.x  = Math.random() * w;
-        this.y  = h + Math.random() * 40;
-        this.vx = (Math.random() - 0.5) * 0.15;
-        this.vy = -(Math.random() * 0.3 + 0.1); 
-        this.r  = Math.random() * 2.2 + 0.5;
-        this.phase = Math.random() * Math.PI * 2;
+        this.x  = Math.random() * w; this.y  = h + Math.random() * 40;
+        this.vx = (Math.random() - 0.5) * 0.15; this.vy = -(Math.random() * 0.3 + 0.1); 
+        this.r  = Math.random() * 2.2 + 0.5; this.phase = Math.random() * Math.PI * 2;
     }
     update() {
-        this.phase += 0.01;
-        this.x += this.vx + Math.sin(this.phase) * 0.05;
-        this.y += this.vy;
+        this.phase += 0.01; this.x += this.vx + Math.sin(this.phase) * 0.05; this.y += this.vy;
         if (this.y < -20) this.reset();
     }
     draw() {
-        ctx.save();
-        ctx.globalAlpha = 0.25;
-        ctx.fillStyle = '#80deea';
-        ctx.beginPath(); ctx.arc(this.x, this.y, this.r, 0, Math.PI*2); ctx.fill();
-        ctx.restore();
-    }
-}
-
-/* ────────────────────────────────────────────
-   🌊 CLASS: TIDE PARTICLE (มวลกระแสน้ำวนดักกลืนจอตอนแอนิเมชันสุ่มรางวัล)
-   ──────────────────────────────────────────── */
-class TideParticle {
-    constructor() {
-        this.x = Math.random() * w; this.y = Math.random() * h;
-        this.vx = (Math.random() - 0.5) * 0.6; this.vy = (Math.random() - 0.5) * 0.3;
-        this.baseRadius = Math.random() * 180 + 180; this.radius = this.baseRadius;
-        this.phase = Math.random() * Math.PI * 2; this.speedPhase = Math.random() * 0.015;
-    }
-    update() {
-        this.phase += this.speedPhase; this.radius = this.baseRadius + Math.sin(this.phase) * 40;
-        this.x += this.vx; this.y += this.vy;
-        if (this.x < -this.radius) this.x = w + this.radius; if (this.x > w + this.radius) this.x = -this.radius;
-        if (this.y < -this.radius) this.y = h + this.radius; if (this.y > h + this.radius) this.y = -this.radius;
-    }
-    draw(globalAlpha) {
-        ctx.save(); ctx.globalAlpha = globalAlpha * 0.32; 
-        let tGrad = ctx.createRadialGradient(this.x, this.y, this.radius * 0.05, this.x, this.y, this.radius);
-        tGrad.addColorStop(0, '#020b18'); tGrad.addColorStop(0.6, '#062347'); tGrad.addColorStop(1, 'transparent');
-        ctx.fillStyle = tGrad; ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2); ctx.fill();
-        ctx.restore();
+        ctx.save(); ctx.globalAlpha = 0.25; ctx.fillStyle = '#80deea'; ctx.beginPath(); ctx.arc(this.x, this.y, this.r, 0, Math.PI*2); ctx.fill(); ctx.restore();
     }
 }
 
 function initOceanEngine() {
-    seaBubbles = Array.from({length: 50}, () => new SeaBubble());
-    waterTides = Array.from({length: 25}, () => new TideParticle());
-    
-    // บิวด์ลำแสงจันทร์นวลครามส่องลงมา 5 เส้นใหญ่แบบคุมมิติจอ
+    seaBubbles = Array.from({length: 40}, () => new SeaBubble());
     moonRays   = Array.from({length: 5}, () => new MoonlightRay());
+    planktons  = Array.from({length: 90}, () => new BioPlankton());
+}
+
+/* ────────────────────────────────────────────
+   🔱 VECTOR GRAPHICS: วาดกล่องสมบัติเจ้าสมุทรสด ๆ บนคานวาส
+   ──────────────────────────────────────────── */
+function drawVectorChest(cx, cy, scale, openProgress) {
+    let cw = 160 * scale; // ความกว้างกล่อง
+    let ch = 100 * scale; // ความสูงฐานกล่อง
+    let lidH = 60 * scale; // ความสูงฝากล่อง
+
+    ctx.save();
+    ctx.shadowBlur = 25;
+    ctx.shadowColor = currentTierColor;
+
+    // 1. วาดตัวฐานกล่องสมบัติ (ขอบทองครามน้ำลึก)
+    ctx.fillStyle = "#0c1b33";
+    ctx.strokeStyle = "#e0b84c";
+    ctx.lineWidth = 4 * scale;
+    ctx.beginPath();
+    ctx.rect(cx - cw/2, cy, cw, ch);
+    ctx.fill(); ctx.stroke();
+
+    // ลายเหล็กดัดทองคาดฐานกล่องสมบัติ
+    ctx.fillStyle = "#e0b84c";
+    ctx.fillRect(cx - cw/2 + 15*scale, cy, 12*scale, ch);
+    ctx.fillRect(cx + cw/2 - 27*scale, cy, 12*scale, ch);
+
+    // 2. เอฟเฟกต์แสงสาดส่องเรืองรองทะลุออกมาเมื่อเปิดฝา (Glow Leak)
+    if (openProgress > 0.05) {
+        let opacity = Math.min(openProgress * 0.8, 0.8);
+        let glowGrad = ctx.createRadialGradient(cx, cy - (lidH * openProgress), 10, cx, cy - (lidH * openProgress), 200 * scale);
+        glowGrad.addColorStop(0, '#ffffff');
+        glowGrad.addColorStop(0.2, currentTierColor); // เรืองแสงตามสีระดับรางวัลเป๊ะ ๆ!
+        glowGrad.addColorStop(0.6, `rgba(3, 212, 191, 0.2)`);
+        glowGrad.addColorStop(1, 'transparent');
+
+        ctx.save();
+        ctx.globalCompositeOperation = 'screen';
+        ctx.fillStyle = glowGrad;
+        ctx.beginPath();
+        ctx.arc(cx, cy, 180 * scale, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+    }
+
+    // 3. วาดฝากล่องสมบัติ (คำนวณตำแหน่งยกลอยขึ้นและเอียงมุมสะบัดตาม OpenProgress)
+    ctx.save();
+    let lidYOffset = cy - (lidH * openProgress * 1.1); // ฝาลอยขึ้นข้างบน
+    ctx.translate(cx, lidYOffset);
     
-    // บิวด์ฝูงแพลงก์ตอนเรืองแสง 110 ตัว พรูพริ้วไหวจากปะการังฝั่งซ้ายออร์แกนิก
-    planktons  = Array.from({length: 110}, () => new BioPlankton());
+    // วาดทรงโค้งฝากล่องสมบัติโบราณ
+    ctx.fillStyle = "#0f2547";
+    ctx.strokeStyle = "#e0b84c";
+    ctx.beginPath();
+    ctx.arc(0, 0, cw/2, Math.PI, 0, false);
+    ctx.lineTo(cw/2, 5*scale);
+    ctx.lineTo(-cw/2, 5*scale);
+    ctx.closePath();
+    ctx.fill(); ctx.stroke();
+
+    // ขอบทองประดับฝากล่อง
+    ctx.fillStyle = "#e0b84c";
+    ctx.beginPath();
+    ctx.arc(0, 0, cw/2, Math.PI, Math.PI + 0.2, false);
+    ctx.lineTo(0, 5*scale);
+    ctx.closePath(); ctx.fill();
+
+    ctx.restore();
+
+    // 4. วาดแม่กุญแจตราตรีศูลตรงกึ่งกลางกล่อง
+    ctx.fillStyle = "#b38f2b";
+    ctx.strokeStyle = "#ffffff";
+    ctx.beginPath();
+    ctx.arc(cx, cy + ch*0.2, 14 * scale, 0, Math.PI*2);
+    ctx.fill(); ctx.stroke();
+    
+    // ช่องรูกุญแจตรีศูล
+    ctx.fillStyle = "#000000";
+    ctx.fillRect(cx - 2*scale, cy + ch*0.16, 4*scale, 10*scale);
+
+    ctx.restore();
 }
 
 /* =============================================
@@ -525,19 +556,38 @@ function initOceanEngine() {
 function animate() {
     ctx.clearRect(0, 0, w, h);
 
-    // 1. ประมวลผลและวาดลำแสงจันทร์พาดผ่านผิวน้ำ (ฉาบเลเยอร์นุ่มนวลชวนฝัน)
+    // 1. วาดระนาบพื้นหลัง: ลำแสงจันทร์ + ฝูงแพลงก์ตอนเรืองแสงคราม
     moonRays.forEach(r => { r.update(); r.draw(); });
-
-    // 2. ประมวลผลและวาดฝูงละอองแพลงก์ตอนเวทมนตร์ขยับเป็นแพทเทิร์นชีวภาพ
     planktons.forEach(p => { p.update(); p.draw(); });
-
-    // 3. วาดฟองอากาศดั้งเดิมคลอเคลียจอ
     seaBubbles.forEach(b => { b.update(); b.draw(); });
 
-    // 4. แอนิเมชันกระแสน้ำวนถาโถมตอนกดสุ่มรางวัล
-    tideAlpha += (targetTideAlpha - tideAlpha) * 0.06;
-    if (tideAlpha > 0.001) {
-        waterTides.forEach(t => { t.update(); t.draw(tideAlpha); });
+    // 2. รันมหาเวทย์ Logic ตู้กาชากล่องสมบัติ (เมื่อกดสุ่มรางวัล)
+    if (treasureState !== "none") {
+        
+        // สเตตที่ A: ฝูงฟองน้ำระเบิดพุ่งจากข้างล่างขึ้นข้างบน
+        if (treasureState === "bubble_burst" || treasureState === "chest_appear" || treasureState === "chest_open") {
+            burstBubbles.forEach(b => {
+                b.y += b.vy;
+                b.x += b.vx;
+                ctx.beginPath();
+                ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(224, 242, 254, ${b.alpha})`;
+                ctx.fill();
+            });
+        }
+
+        // สเตตที่ B: กล่องสมบัติเจ้าสมุทรปรากฏตัวกลางวงจอคอม
+        if (treasureState === "chest_appear" || treasureState === "chest_open") {
+            let chestX = w / 2;
+            let chestY = h / 2 - 30;
+            
+            if (treasureState === "chest_open") {
+                // ค่อย ๆ กางเปิดฝากล่องสมบัติออกช้า ๆ ดึงอารมณ์ร่วม
+                if (chestOpenProgress < 1.0) chestOpenProgress += 0.025;
+            }
+            
+            drawVectorChest(chestX, chestY, 1.2, chestOpenProgress);
+        }
     }
 
     requestAnimationFrame(animate);
