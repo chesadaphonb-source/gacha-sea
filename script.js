@@ -1,5 +1,5 @@
 /* =========================================================
-   OCEAN WISH SYSTEM — ENGINE SCRIPT (THE OCEAN LIFE UPDATE - FULL VERSION)
+   OCEAN WISH SYSTEM — ENGINE SCRIPT (MOONLIGHT & PLANKTON UPDATE)
    ========================================================= */
 
 /* --- Configuration --- */
@@ -24,10 +24,10 @@ let waterTides = [];
 let tideAlpha = 0;
 let targetTideAlpha = 0;
 
-// เอ็นจิ้นสิ่งมีชีวิตก้นมหาสมุทร
+// เอ็นจิ้นแสงจันทร์และแพลงก์ตอนเวทมนตร์
 let seaBubbles = [];
-let smokeParticles = [];
-let fishes = [];
+let planktons = [];
+let moonRays = [];
 
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzYNML38mXJT-x_5ya7HXKh9ZuIt2yYpAc5FsR8rKjEWxtqm95GqSuBf72i61vXAHjIsA/exec";
 
@@ -60,7 +60,6 @@ window.onload = function () {
     initOceanEngine();
     animate();
 
-    // เคลียร์เลเยอร์ใหม่: เปิดแค่กล่องทองใส่ CSV หน้าแรก ส่วนแผงควบคุมสุ่มอื่น ๆ สั่งซ่อนให้สนิทพรีเมียม
     document.getElementById('setupContainer').style.display = 'flex';
     document.getElementById('adminControls').style.display  = 'none';
     document.getElementById('resultControls').style.display = 'none';
@@ -325,7 +324,7 @@ function resetGame() {
 }
 
 /* =========================================================
-   4. CANVAS — ETHEREAL SEA BUBBLES & LIFE ENGINE (ฝูงปลา + ควันภูเขาไฟ)
+   4. CANVAS — ETHEREAL MOONLIGHT & PLANKTON BIO-ENGINE
    ========================================================= */
 const canvas = document.getElementById('starCanvas');
 const ctx    = canvas.getContext('2d');
@@ -338,49 +337,118 @@ function resize() {
 window.addEventListener('resize', resize); resize();
 
 /* ────────────────────────────────────────────
-   🫧 CLASS: ETHEREAL SEA BUBBLE (ฟองอากาศเวทมนตร์ลอยขึ้นแนวดิ่ง)
+   🌙 CLASS: VOLUMETRIC MOONLIGHT RAY (ลำแสงจันทร์สีนวลครามส่ายเอื่อย ๆ)
    ──────────────────────────────────────────── */
-class SeaBubble {
-    constructor() { this.reset(); this.y = Math.random() * h; }
-    reset() {
-        this.x  = Math.random() * w;
-        this.y  = h + Math.random() * 40;
-        this.vx = (Math.random() - 0.5) * 0.15;
-        this.vy = -(Math.random() * 0.4 + 0.15); 
-        this.r  = Math.random() * 2.8 + 0.5;
-        this.glowR    = this.r * (Math.random() * 4 + 5);
-        this.phase    = Math.random() * Math.PI * 2;
-        this.wobbleS  = Math.random() * 0.02 + 0.005;
-        
-        const palette = ['#4db6ac','#80deea','#b2ebf2','#e0f7fa','#e0b84c'];
-        this.color = palette[Math.floor(Math.random() * palette.length)];
+class MoonlightRay {
+    constructor() {
+        this.x = Math.random() * w; // จุดตั้งต้นบนผิวน้ำ
+        this.width = Math.random() * 90 + 40; // ความหนาของลำแสง
+        this.angle = (Math.random() * 5 + 15) * (Math.PI / 180); // ปรับองศาเอียงเฉียงพรีเมียม
+        this.phase = Math.random() * Math.PI * 2;
+        this.speed = Math.random() * 0.003 + 0.001; // ความเร็วการแกว่ง (ช้าจัดสไตล์กล่อมมนตรา)
+        this.alphaMax = Math.random() * 0.12 + 0.05; // ความสว่างสูงสุดไม่แย่งซีนตัวหนังสือ
     }
     update() {
-        this.phase += this.wobbleS;
-        this.brightness = (Math.sin(this.phase) + 1) / 2;
-
-        if (isWarping) {
-            this.vx += Math.sin(this.phase * 0.3) * 0.02;
-            this.vy -= 0.01;
-        } else {
-            this.vx += Math.sin(this.phase * 0.5) * 0.005;
-        }
-        
-        this.x += this.vx; this.y += this.vy;
-        if (this.x < -30) this.x = w + 30; if (this.x > w + 30) this.x = -30;
-        if (this.y < -30) this.reset();
+        this.phase += this.speed;
     }
     draw() {
-        const alpha = this.brightness * 0.75 + 0.25;
-        const gGrad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.glowR);
-        gGrad.addColorStop(0, this.color + Math.floor(alpha * 120).toString(16).padStart(2,'0'));
+        // คำนวณองศาขยับส่ายโยกเยกเบา ๆ ตามแรงคลื่นผิวน้ำ
+        let currentAngle = this.angle + Math.sin(this.phase) * 0.03;
+        let currentAlpha = this.alphaMax * (0.7 + Math.sin(this.phase * 2) * 0.3);
+
+        ctx.save();
+        ctx.globalCompositeOperation = 'screen'; // ผสมแสงให้นุ่มนวลกลืนไปกับรูปภาพ
+
+        // สร้าง Gradient แนวทะแยงตามทิศทางแสงจันทร์นวลคราม
+        let length = h * 1.5;
+        let targetX = this.x + Math.sin(currentAngle) * length;
+        let targetY = Math.cos(currentAngle) * length;
+
+        let rayGrad = ctx.createLinearGradient(this.x, 0, targetX, targetY);
+        rayGrad.addColorStop(0, `rgba(165, 243, 252, ${currentAlpha})`); // สีนวลนภาดวงจันทร์ท่อนบน
+        rayGrad.addColorStop(0.4, `rgba(56, 189, 248, ${currentAlpha * 0.4})`); // สีฟ้าน้ำทะเลลึกช่วงกลาง
+        rayGrad.addColorStop(1, 'transparent');
+
+        ctx.fillStyle = rayGrad;
+        ctx.beginPath();
+        ctx.moveTo(this.x - this.width / 2, 0);
+        ctx.lineTo(this.x + this.width / 2, 0);
+        ctx.lineTo(targetX + this.width, targetY);
+        ctx.lineTo(targetX - this.width, targetY);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.restore();
+    }
+}
+
+/* ────────────────────────────────────────────
+   🪸 CLASS: BIOLUMINESCENT PLANKTON (ฝูงแพลงก์ตอนเรืองแสง ขยับพริ้วตามแพทเทิร์น)
+   ──────────────────────────────────────────── */
+class BioPlankton {
+    constructor() {
+        this.reset();
+        this.y = Math.random() * h; // กระจายตัวนุ่มนวลตอนรันเว็บ
+    }
+    reset() {
+        // แพทเทิร์นชีวภาพ: เกิดจากโซนแนวปะการังฝั่งซ้ายล่าง (X: 0 - 30%, Y: 70% - 95%)
+        this.x = Math.random() * (w * 0.3);
+        this.y = h * (0.7 + Math.random() * 0.25);
+        
+        // 🔮 สั่งเคลื่อนที่ด้วย Pattern ลอยพริ้วโค้งเอื่อยเฉียงขวาขึ้นบน (ตามกระแสน้ำวนในภาพ)
+        this.baseVx = Math.random() * 0.2 + 0.15;
+        this.baseVy = -(Math.random() * 0.3 + 0.1);
+        this.vx = this.baseVx;
+        this.vy = this.baseVy;
+
+        this.r = Math.random() * 1.8 + 0.6; // ขนาดละอองแพลงก์ตอนจิ๋ว
+        this.glowR = this.r * (Math.random() * 5 + 4);
+        
+        this.phase = Math.random() * Math.PI * 2;
+        this.wobbleSpeed = Math.random() * 0.01 + 0.005;
+        
+        // พาเลทสีสปอร์เรืองแสงอวตาร (ฟ้านีออน / เขียวมินต์ปะการัง / อความารีน)
+        const colors = ['#2dd4bf', '#06b6d4', '#38bdf8', '#a5f3fc', '#34d399'];
+        this.color = colors[Math.floor(Math.random() * colors.length)];
+        
+        this.life = 1.0;
+        this.decay = Math.random() * 0.0012 + 0.0005; // ค่อย ๆ แก่ตัวและสลายไป
+    }
+    update() {
+        this.phase += this.wobbleSpeed;
+        this.life -= this.decay;
+
+        // 🌊 แพทเทิร์นคลื่นไหลโยกตามลูปคณิตศาสตร์ออร์แกนิก (ขยับพริ้วไหวเป็นกลุ่มก้อน)
+        this.vx = this.baseVx + Math.sin(this.phase) * 0.15;
+        this.vy = this.baseVy + Math.cos(this.phase * 0.5) * 0.1;
+
+        this.x += this.vx;
+        this.y += this.vy;
+
+        // ถ้าหลุดขอบจอหรือแก่ตาย -> รีเซ็ตไปเกิดใหม่ที่แนวปะการังซ้ายล่างออโต้
+        if (this.x > w + 20 || this.y < -20 || this.life <= 0) {
+            this.reset();
+        }
+    }
+    draw() {
+        if (this.life <= 0) return;
+        
+        // คำนวณความสว่างกระพริบวูบวาบเบา ๆ สไตล์ชีวภาพ (Bioluminescence)
+        let pulseAlpha = (Math.sin(this.phase * 1.5) + 1) / 2;
+        let finalAlpha = pulseAlpha * this.life * 0.8;
+
+        // 1. วาดแสงออร่าสะท้อนเรืองแสงรอบตัวแพลงก์ตอน
+        let gGrad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.glowR);
+        gGrad.addColorStop(0, this.color + Math.floor(finalAlpha * 140).toString(16).padStart(2,'0'));
         gGrad.addColorStop(1, 'transparent');
         
+        ctx.save();
+        ctx.globalCompositeOperation = 'screen';
         ctx.fillStyle = gGrad;
         ctx.beginPath(); ctx.arc(this.x, this.y, this.glowR, 0, Math.PI*2); ctx.fill();
-        
-        ctx.save();
-        ctx.globalAlpha = alpha;
+
+        // 2. วาดแกนกลางละอองแสงแพลงก์ตอนดวงจิ๋วขาวเรืองแสง
+        ctx.globalAlpha = finalAlpha;
         ctx.fillStyle   = '#ffffff';
         ctx.beginPath(); ctx.arc(this.x, this.y, this.r, 0, Math.PI*2); ctx.fill();
         ctx.restore();
@@ -388,122 +456,48 @@ class SeaBubble {
 }
 
 /* ────────────────────────────────────────────
-   🌋 CLASS: HYDROTHERMAL SMOKE (ควันระเบิดพวยพุ่งจากภูเขาไฟขวาจอ)
+   🫧 CLASS: ETHEREAL SEA BUBBLE (ฟองอากาศโปร่งแสงดั้งเดิมคอยเสริมมิติ)
    ──────────────────────────────────────────── */
-class SmokeParticle {
-    constructor(sourceX, sourceY) {
-        this.sourceX = sourceX;
-        this.sourceY = sourceY;
-        this.reset();
-    }
+class SeaBubble {
+    constructor() { this.reset(); this.y = Math.random() * h; }
     reset() {
-        this.x = this.sourceX + (Math.random() * 30 - 15);
-        this.y = this.sourceY + (Math.random() * 10 - 5);
-        this.size = Math.random() * 10 + 8;
-        this.maxSize = Math.random() * 45 + 35;
-        this.speedY = Math.random() * 1.2 + 0.6;
-        this.speedX = Math.random() * 0.4 - 0.1; // ควันจะเอียงไปทางซ้ายตามรูปมึงเป๊ะ
-        this.alpha = Math.random() * 0.3 + 0.2;
-        this.growSpeed = Math.random() * 0.15 + 0.08;
-        this.fadeSpeed = Math.random() * 0.0015 + 0.001;
+        this.x  = Math.random() * w;
+        this.y  = h + Math.random() * 40;
+        this.vx = (Math.random() - 0.5) * 0.15;
+        this.vy = -(Math.random() * 0.3 + 0.1); 
+        this.r  = Math.random() * 2.2 + 0.5;
+        this.phase = Math.random() * Math.PI * 2;
     }
     update() {
-        this.y -= this.speedY;
-        this.x += this.speedX;
-        if (this.size < this.maxSize) this.size += this.growSpeed;
-        this.alpha -= this.fadeSpeed;
-        if (this.alpha <= 0) this.reset();
+        this.phase += 0.01;
+        this.x += this.vx + Math.sin(this.phase) * 0.05;
+        this.y += this.vy;
+        if (this.y < -20) this.reset();
     }
     draw() {
-        if (this.alpha <= 0) return;
-        let grad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size);
-        grad.addColorStop(0, `rgba(45, 212, 191, ${this.alpha})`); // แกนกลางสีมินต์ตามรูปมึง
-        grad.addColorStop(0.3, `rgba(11, 35, 71, ${this.alpha * 0.6})`);
-        grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-
-        ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fillStyle = grad; ctx.fill();
-    }
-}
-
-/* ────────────────────────────────────────────
-   🐟 CLASS: BIOLUMINESCENT FISH (ปลาขยับสะบัดหางพลิ้วไหวลื่น ๆ)
-   ──────────────────────────────────────────── */
-class Fish {
-    constructor() {
-        this.init();
-        this.x = Math.random() * w; // กระจายตัวรอบจอตอนเริ่มรัน
-    }
-    init() {
-        this.direction = Math.random() > 0.5 ? 1 : -1;
-        this.x = this.direction === 1 ? -100 : w + 100;
-        this.y = Math.random() * (h * 0.7) + (h * 0.1);
-        this.size = Math.random() * 12 + 8;
-        this.speedX = (Math.random() * 0.8 + 0.4) * this.direction;
-        this.swimCycle = Math.random() * Math.PI * 2;
-        this.swimSpeed = Math.random() * 0.08 + 0.05;
-        this.amplitudeY = Math.random() * 0.5 + 0.2;
-        this.colorType = Math.random() > 0.4 ? 'aqua' : 'gold';
-    }
-    update() {
-        this.x += this.speedX;
-        this.swimCycle += this.swimSpeed;
-        this.y += Math.sin(this.swimCycle) * this.amplitudeY;
-
-        if (this.direction === 1 && this.x > w + 120) this.init();
-        if (this.direction === -1 && this.x < -120) this.init();
-    }
-    draw() {
-        ctx.save(); ctx.translate(this.x, this.y);
-        if (this.direction === -1) ctx.scale(-1, 1);
-
-        let fishColor = this.colorType === 'aqua' ? '#2dd4bf' : '#e0b84c';
-        ctx.shadowBlur = 10; ctx.shadowColor = fishColor;
-
-        let tailWobble = Math.sin(this.swimCycle * 1.5) * 8;
-
-        ctx.beginPath();
-        ctx.moveTo(0, 0);
-        ctx.bezierCurveTo(-10, -6, -25, -4, -35, 0);
-        ctx.bezierCurveTo(-25, 4, -10, 6, 0, 0);
-        
-        ctx.moveTo(-35, 0);
-        ctx.lineTo(-48, -8 + tailWobble);
-        ctx.lineTo(-44, 0);
-        ctx.lineTo(-48, 8 + tailWobble);
-        ctx.closePath();
-
-        ctx.fillStyle = fishColor; ctx.fill();
-        
-        ctx.beginPath(); ctx.moveTo(-15, 3); ctx.lineTo(-22, 10); ctx.lineTo(-20, 2);
-        ctx.fillStyle = this.colorType === 'aqua' ? '#1a3f66' : '#b38f2b'; ctx.fill();
+        ctx.save();
+        ctx.globalAlpha = 0.25;
+        ctx.fillStyle = '#80deea';
+        ctx.beginPath(); ctx.arc(this.x, this.y, this.r, 0, Math.PI*2); ctx.fill();
         ctx.restore();
     }
 }
 
 /* ────────────────────────────────────────────
-   🌊 CLASS: TIDE PARTICLE (มวลกระแสน้ำวนบดบังจอตอนกดสุ่มรางวัล)
+   🌊 CLASS: TIDE PARTICLE (มวลกระแสน้ำวนดักกลืนจอตอนแอนิเมชันสุ่มรางวัล)
    ──────────────────────────────────────────── */
 class TideParticle {
     constructor() {
-        this.x = Math.random() * w;
-        this.y = Math.random() * h;
-        this.vx = (Math.random() - 0.5) * 0.6;
-        this.vy = (Math.random() - 0.5) * 0.3;
-        this.baseRadius = Math.random() * 180 + 180;
-        this.radius = this.baseRadius;
-        this.phase = Math.random() * Math.PI * 2;
-        this.speedPhase = Math.random() * 0.015;
+        this.x = Math.random() * w; this.y = Math.random() * h;
+        this.vx = (Math.random() - 0.5) * 0.6; this.vy = (Math.random() - 0.5) * 0.3;
+        this.baseRadius = Math.random() * 180 + 180; this.radius = this.baseRadius;
+        this.phase = Math.random() * Math.PI * 2; this.speedPhase = Math.random() * 0.015;
     }
     update() {
-        this.phase += this.speedPhase;
-        this.radius = this.baseRadius + Math.sin(this.phase) * 40;
+        this.phase += this.speedPhase; this.radius = this.baseRadius + Math.sin(this.phase) * 40;
         this.x += this.vx; this.y += this.vy;
-
-        if (this.x < -this.radius) this.x = w + this.radius;
-        if (this.x > w + this.radius) this.x = -this.radius;
-        if (this.y < -this.radius) this.y = h + this.radius;
-        if (this.y > h + this.radius) this.y = -this.radius;
+        if (this.x < -this.radius) this.x = w + this.radius; if (this.x > w + this.radius) this.x = -this.radius;
+        if (this.y < -this.radius) this.y = h + this.radius; if (this.y > h + this.radius) this.y = -this.radius;
     }
     draw(globalAlpha) {
         ctx.save(); ctx.globalAlpha = globalAlpha * 0.32; 
@@ -515,13 +509,14 @@ class TideParticle {
 }
 
 function initOceanEngine() {
-    seaBubbles = Array.from({length: 120}, () => new SeaBubble());
+    seaBubbles = Array.from({length: 50}, () => new SeaBubble());
     waterTides = Array.from({length: 25}, () => new TideParticle());
     
-    // ล็อกพิกัดปากปล่องควันภูเขาไฟขวาจอ (X: 82%, Y: 88%)
-    let ventX = w * 0.82; let ventY = h * 0.88;
-    smokeParticles = Array.from({length: 40}, () => new SmokeParticle(ventX, ventY));
-    fishes = Array.from({length: 6}, () => new Fish());
+    // บิวด์ลำแสงจันทร์นวลครามส่องลงมา 5 เส้นใหญ่แบบคุมมิติจอ
+    moonRays   = Array.from({length: 5}, () => new MoonlightRay());
+    
+    // บิวด์ฝูงแพลงก์ตอนเรืองแสง 110 ตัว พรูพริ้วไหวจากปะการังฝั่งซ้ายออร์แกนิก
+    planktons  = Array.from({length: 110}, () => new BioPlankton());
 }
 
 /* =============================================
@@ -530,22 +525,16 @@ function initOceanEngine() {
 function animate() {
     ctx.clearRect(0, 0, w, h);
 
-    // ปรับพิกัดปากปล่องควันภูเขาไฟให้ล็อกอยู่กับที่ตามขนาดจอแปรผันออโต้
-    let ventX = w * 0.82; let ventY = h * 0.88;
+    // 1. ประมวลผลและวาดลำแสงจันทร์พาดผ่านผิวน้ำ (ฉาบเลเยอร์นุ่มนวลชวนฝัน)
+    moonRays.forEach(r => { r.update(); r.draw(); });
 
-    // 1. วาดและประมวลผลควันภูเขาไฟ (เลเยอร์หลังสุด)
-    smokeParticles.forEach(p => {
-        p.sourceX = ventX; p.sourceY = ventY;
-        p.update(); p.draw();
-    });
+    // 2. ประมวลผลและวาดฝูงละอองแพลงก์ตอนเวทมนตร์ขยับเป็นแพทเทิร์นชีวภาพ
+    planktons.forEach(p => { p.update(); p.draw(); });
 
-    // 2. วาดและประมวลผลฝูงฟองอากาศเวทมนตร์
+    // 3. วาดฟองอากาศดั้งเดิมคลอเคลียจอ
     seaBubbles.forEach(b => { b.update(); b.draw(); });
 
-    // 3. วาดและประมวลผลฝูงปลาสะบัดหางพลิ้วไหว
-    fishes.forEach(f => { f.update(); f.draw(); });
-
-    // 4. คำนวณความหนาแน่นและปล่อยพลังมวลคลื่นวารีซัดสาดบดบังจอตอนกดสุ่มรางวัล
+    // 4. แอนิเมชันกระแสน้ำวนถาโถมตอนกดสุ่มรางวัล
     tideAlpha += (targetTideAlpha - tideAlpha) * 0.06;
     if (tideAlpha > 0.001) {
         waterTides.forEach(t => { t.update(); t.draw(tideAlpha); });
