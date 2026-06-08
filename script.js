@@ -2,13 +2,13 @@
    OCEAN WISH SYSTEM — ENGINE SCRIPT (OPTIMIZED AQUATIC VERSION)
    ========================================================= */
 
-/* --- Configuration --- */
+/* --- Configuration ตัวแก้จำนวนผู้ได้รับรางวัล--- */
 const prizes = [
-    { name: "รางวัล 5 ", count: 50, color: "#65d4a0" },
-    { name: "รางวัล 4 ",    count: 30, color: "#c084fc" },
-    { name: "รางวัล 3 ",    count: 15, color: "#f472b6" },
-    { name: "รางวัล 2 ",    count: 5,  color: "#fbbf24" },
-    { name: "รางวัล 1 ",   count: 3,  color: "#f59e0b" }
+    { name: "รางวัลลำดับที่ 5 ", count: 20, color: "#65d4a0" },
+    { name: "รางวัลลำดับที่ 4 ", count: 15, color: "#c084fc" },
+    { name: "รางวัลลำดับที่ 3 ", count: 5, color: "#f472b6" },
+    { name: "รางวัลลำดับที่ 2 ", count: 2,  color: "#fbbf24" },
+    { name: "รางวัลลำดับที่ 1 ", count: 1,  color: "#f59e0b" }
 ];
 
 /* --- Game State --- */
