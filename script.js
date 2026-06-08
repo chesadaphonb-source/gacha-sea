@@ -63,7 +63,7 @@ function getDisplayData(winner) {
     const startSubIndex = keys.length > 1 ? 2 : 1;
     keys.slice(startSubIndex).forEach(k => {
         if (winner[k] && winner[k] !== "-" && String(winner[k]).trim() !== "")
-            detailList.push(winner[k]); // เอาเฉพาะเนื้อข้อมูลเพียว ๆ ไม่เอาหัวคอลัมน์มาเบียด
+            detailList.push(winner[k]);
     });
     return { id: idVal, name: nameVal, details: detailList };
 }
@@ -99,7 +99,6 @@ function loadData() {
             const lines = csv.split(/\r?\n/).filter(l => l.trim() !== "");
             if (lines.length < 2) throw new Error("ไฟล์ CSV ว่างเปล่าหรือรูปแบบผิด");
 
-            // ยกระดับระบบล้างอักขระพิเศษส่วนเกินดักบั๊กเบี้ยว
             headers = lines[0].split(',').map(h => h.replace(/^"|"$/g, '').trim());
             
             participants = lines.slice(1).map(line => {
@@ -118,7 +117,7 @@ function loadData() {
             document.getElementById('mainScreen').style.display     = 'block';
 
             updateUI(true);
-            alert(`โหลดข้อมูลสำเร็จ! ดูดรายชื่อเข้าระบบ: ${participants.length} คนถ้วน`);
+            alert(`โหลดข้อมูลสำเร็จ! ดูดรายชื่อเข้าระบบ: ${participants.length} คนครบถ้วนโว้ยมึง!`);
         })
         .catch(err => {
             console.error(err);
@@ -129,8 +128,8 @@ function loadData() {
 
 function updateUI(showCount = false) {
     if (currentTier >= prizes.length) {
-        let endHtml = `<h1 class="gold-text" style="font-family:'Cinzel Decorative',serif;">🔱 จบกิจกรรม 🔱</h1>
-                       <p style="color:#7fa6c7;margin-bottom:20px;">ขอบคุณผู้ร่วมสนุกทุกท่าน</p>
+        let endHtml = `<h1 class="gold-text" style="font-family:'Cinzel Decorative',serif;">🔱 จบกิจกรรมเจ้าสมุทร! 🔱</h1>
+                       <p style="color:#7fa6c7;margin-bottom:20px;">ขอบคุณผู้ร่วมสนุกทุกคน</p>
                        <button onclick="resetGame()" style="
                         padding:15px 40px;font-size:22px;font-family:'Kanit',sans-serif;
                         background:linear-gradient(45deg,#1e3f66,#2e5b88);
@@ -194,7 +193,7 @@ function triggerWish() {
 }
 
 /* =========================================================
-   🫧 NEW EFFECT: HYPER AQUATIC FOAM EXPLOSION (ฟองน้ำพุ่งถาโถมล้างหน้าจอ)
+   🫧 EFFECT: HYPER AQUATIC FOAM EXPLOSION (ระเบิดฟองกระจายถมจอสมจริง)
    ========================================================= */
 function playAbyssalBubbleAnimation(winners) {
     const tier = prizes[currentTier];
@@ -211,25 +210,24 @@ function playAbyssalBubbleAnimation(winners) {
     treasureState = "bubble_burst";
     burstBubbles = [];
 
-    // 🔥 [อัปเกรด] สาดฝูงฟองสบู่ระเบิดสมจริงขึ้นถล่มเป็น 880 ลูก กระแทกพุ่งเต็มหน้าจอ!
+    // สาดฟองสบู่ระเบิดสมจริง 880 ลูก ถล่มพุ่งพรูขึ้นแกนตั้ง
     for (let i = 0; i < 880; i++) {
         let size = Math.random() * 9 + 1.5;
         burstBubbles.push({
             x: Math.random() * w,
             y: h + Math.random() * 400,
             r: size,
-            vy: -(Math.random() * 16 + 6), // เร่งความเร็วพุ่งพรูขึ้นแกนตั้ง
+            vy: -(Math.random() * 16 + 6), 
             vx: (Math.random() - 0.5) * 3.5,
             alpha: Math.random() * 0.75 + 0.25,
             wobble: Math.random() * Math.PI,
             wobbleSpeed: Math.random() * 0.05 + 0.02,
-            blur: size > 7.5 ? 2.5 : 0 // เบลอระยะลึกตื้นเลนส์กล้อง
+            blur: size > 7.5 ? 2.5 : 0 
         });
     }
 
-    // จังหวะตื่นของแสงและบอร์ดการ์ด 3D
     setTimeout(() => {
-        flash.style.background = '#e0f7fa'; // แฟลชสว่างสีฟ้าน้ำทะเลนวลๆ
+        flash.style.background = '#e0f7fa'; 
         flash.style.opacity    = '0.9';
         showResults(winners, tier);
     }, 1800);
@@ -242,7 +240,7 @@ function playAbyssalBubbleAnimation(winners) {
 }
 
 /* =============================================
-   SHOW RESULTS (ล็อกแสดงผล 3 ช่องเน้น ๆ: ID, ชื่อ-นามสกุล, สังกัด)
+   SHOW RESULTS (ล็อกแสดงผล 3 ช่องเน้น ๆ)
    ============================================= */
 function showResults(winners, tier) {
     const grid = document.getElementById('resultGrid');
@@ -260,7 +258,6 @@ function showResults(winners, tier) {
         card.style.setProperty('--glow-color', tier.color);
         card.style.boxShadow        = `0 15px 35px rgba(0,0,0,0.8), 0 0 25px ${tier.color}33`;
 
-        // ล็อกเป้าดึงข้อมูลช่องที่ 3 (สังกัด) ออกมาโชว์แผ่นป้ายใบจริง
         let affiliationText = data.details[0] !== undefined ? data.details[0] : "-";
 
         card.innerHTML = `
@@ -460,7 +457,8 @@ class SeaBubble {
         if (this.y < -20) this.reset();
     }
     draw() {
-        ctx.save(); ctx.globalAlpha = 0.25; ctx.fillStyle = '#80deea'; ctx.beginPath(); ctx.arc(this.x, this.y, this.r, 0, Math.PI*2); ctx.fill(); ctx.restore();
+        ctx.save(); ctx.globalAlpha = 0.25; ctx.fillStyle = '#80deea'; ctx.beginPath(); ctx.arc(this.x, this.y, this.r, 0, Math.PI*2); ctx.fill();
+        ctx.restore();
     }
 }
 
@@ -480,7 +478,7 @@ function animate() {
     planktons.forEach(p => { p.update(); p.draw(); });
     seaBubbles.forEach(b => { b.update(); b.draw(); });
 
-    // 🌊 รันเอนจิ้นฟองสบู่ความละเอียดสูงพุ่งระเบิดเต็มจอ (Specular Translucent Glass Effect)
+    // 🌊 รันเอนจิ้นฟองสบู่ความละเอียดสูงพุ่งระเบิดเต็มจอ
     if (treasureState === "bubble_burst") {
         burstBubbles.forEach(b => {
             b.y += b.vy;
@@ -492,7 +490,6 @@ function animate() {
                 ctx.filter = `blur(${b.blur}px)`;
             }
             
-            // วาดตัวฟองแก้วโปร่งแสงมีมิติจริงแบบไฮเอนด์
             ctx.beginPath();
             ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
             ctx.fillStyle = `rgba(180, 230, 250, ${b.alpha * 0.22})`; 
@@ -502,7 +499,6 @@ function animate() {
             ctx.lineWidth = 1.2;
             ctx.stroke();
             
-            // เพิ่มจุดสะท้อนแสงไฟวิบวับบนผิวกระจกฟองสบู่ (Specular Highlight Point)
             ctx.beginPath();
             ctx.arc(b.x - b.r * 0.3, b.y - b.r * 0.3, b.r * 0.15, 0, Math.PI * 2);
             ctx.fillStyle = `rgba(255, 255, 255, ${b.alpha * 0.95})`;
