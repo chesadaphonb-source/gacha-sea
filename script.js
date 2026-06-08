@@ -118,7 +118,7 @@ function loadData() {
             document.getElementById('mainScreen').style.display     = 'block';
 
             updateUI(true);
-            alert(`โหลดข้อมูลสำเร็จ! ดูดรายชื่อเข้าระบบ: ${participants.length} คนครบถ้วนโว้ยมึง!`);
+            alert(`โหลดข้อมูลสำเร็จ! ดูดรายชื่อเข้าระบบ: ${participants.length} คนถ้วน`);
         })
         .catch(err => {
             console.error(err);
@@ -129,8 +129,8 @@ function loadData() {
 
 function updateUI(showCount = false) {
     if (currentTier >= prizes.length) {
-        let endHtml = `<h1 class="gold-text" style="font-family:'Cinzel Decorative',serif;">🔱 จบกิจกรรมเจ้าสมุทร! 🔱</h1>
-                       <p style="color:#7fa6c7;margin-bottom:20px;">ขอบคุณผู้ร่วมสนุกทุกคน</p>
+        let endHtml = `<h1 class="gold-text" style="font-family:'Cinzel Decorative',serif;">🔱 จบกิจกรรม 🔱</h1>
+                       <p style="color:#7fa6c7;margin-bottom:20px;">ขอบคุณผู้ร่วมสนุกทุกท่าน</p>
                        <button onclick="resetGame()" style="
                         padding:15px 40px;font-size:22px;font-family:'Kanit',sans-serif;
                         background:linear-gradient(45deg,#1e3f66,#2e5b88);
