@@ -1,5 +1,5 @@
 /* =========================================================
-   OCEAN WISH SYSTEM — ENGINE SCRIPT (ABSOLUTE INDEX MAPPING VERSION)
+   OCEAN WISH SYSTEM — ENGINE SCRIPT (OPTIMIZED AQUATIC VERSION)
    ========================================================= */
 
 /* --- Configuration --- */
@@ -19,7 +19,7 @@ let isWarping      = false;
 let currentTierColor = "#65d4a0";
 let winnersHistory = {};
 
-// ระบบเอฟเฟกต์แสดงผลฟองอากาศ
+// ระบบเอฟเฟกต์แอนิเมชันเปิดรางวัล
 let treasureState = "none"; 
 let burstBubbles = []; 
 
@@ -30,7 +30,7 @@ let planktons = [];
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzYNML38mXJT-x_5ya7HXKh9ZuIt2yYpAc5FsR8rKjEWxtqm95GqSuBf72i61vXAHjIsA/exec";
 
 /* =============================================
-   ROBUST CSV PARSER (ระบบแยกคำคอลัมน์ความละเอียดสูง)
+   ROBUST CSV PARSER
    ============================================= */
 function parseCSVLine(line) {
     let arr = [];
@@ -92,7 +92,6 @@ function loadData() {
 
             headers = parseCSVLine(lines[0]).map(h => h.replace(/^"|"$/g, '').trim());
             
-            // 🔥 ล็อกตำแหน่งดัชนีแถวตรงๆ [0]=ID, [1]=ชื่อ, [2]=สังกัด หมดปัญหาดึงคีย์วรรคเพี้ยน
             participants = lines.slice(1).map(line => {
                 const data = parseCSVLine(line);
                 if (data.length < 1 || data[0] === "") return null;
@@ -185,7 +184,7 @@ function triggerWish() {
 }
 
 /* =========================================================
-   🫧 EFFECT: INSTANT BUBBLE WAVE (เอฟเฟกต์ฟองอากาศลอยตัวกวาดขึ้นบน)
+   🫧 FIXED EFFECT: SMOOTH BUBBLE SWEEP (ลดจำนวนฟอง ปรับขนาดใหญ่ขึ้น ลื่นไหลสูงสุด)
    ========================================================= */
 function playAbyssalBubbleAnimation(winners) {
     const tier = prizes[currentTier];
@@ -202,36 +201,37 @@ function playAbyssalBubbleAnimation(winners) {
     treasureState = "bubble_burst";
     burstBubbles = [];
 
-    for (let i = 0; i < 700; i++) {
-        let size = Math.random() * 8 + 1.5;
+    // 🔥 [FIXED] ลดจำนวนฟองลงเหลือ 160 ลูกเพื่อแก้กระตุก และเพิ่มขนาดรัศมีให้ใหญ่สมบูรณ์เต็มจอ
+    for (let i = 0; i < 160; i++) {
+        let size = Math.random() * 20 + 7; // ปรับขนาดเพิ่มขึ้นเด่นชัดจากก้นจอ
         burstBubbles.push({
             x: Math.random() * w,
-            y: h + Math.random() * 100, 
+            y: h + Math.random() * 60, // ตั้งพิกัดให้สแตนด์บายชิดติดขอบล่างจอพอดี
             r: size,
-            vy: -(Math.random() * 13 + 10), 
-            vx: (Math.random() - 0.5) * 2.5,
-            alpha: Math.random() * 0.75 + 0.25,
+            vy: -(Math.random() * 8 + 12), // เพิ่มความเร็วในการพุ่งกวาดขึ้นด้านบน
+            vx: (Math.random() - 0.5) * 2.0,
+            alpha: Math.random() * 0.7 + 0.3,
             wobble: Math.random() * Math.PI,
-            wobbleSpeed: Math.random() * 0.04 + 0.02,
-            blur: size > 6.5 ? 1.5 : 0 
+            wobbleSpeed: Math.random() * 0.04 + 0.02
         });
     }
 
+    // ⏱️ หน่วงเวลาให้ฟองน้ำพุ่งกวาดผ่านหน้าจอขึ้นไปด้านบนจนสุด (1.5 วินาที) จากนั้นจึงแสดงผลลัพธ์รายชื่อ
     setTimeout(() => {
         flash.style.background = '#030914'; 
         flash.style.opacity    = '0.85';
         showResults(winners, tier);
-    }, 1300);
+    }, 1500);
 
     setTimeout(() => {
         treasureState = "none";
         flash.style.opacity = '0';
         isWarping = false;
-    }, 2000);
+    }, 2100);
 }
 
 /* =============================================
-   SHOW RESULTS (แสดงการ์ดผู้โชคดีระนาบตรง)
+   SHOW RESULTS
    ============================================= */
 function showResults(winners, tier) {
     const grid = document.getElementById('resultGrid');
@@ -277,6 +277,9 @@ function nextRound() {
     updateUI(true);
 }
 
+/* =============================================
+   📊 HISTORY PANEL GENERATION (🔥 FIXED: ผูกโครงสร้างข้อมูลให้เรียบร้อย)
+   ============================================= */
 function toggleHistory() {
     const modal = document.getElementById('historyModal');
     const list  = document.getElementById('historyList');
@@ -300,9 +303,10 @@ function toggleHistory() {
 
             contentHtml += `<div id="tab-${index}" class="tab-content ${isActive}">`;
             winners.forEach(w => {
+                // จัดโครงสร้าง Class HTML แถวประวัติให้เข้าล็อกการแสดงผลฝั่งขวา
                 contentHtml += `<div class="history-item">
-                    <div style="font-weight:bold;">${w.name}</div>
-                    <div style="font-size:0.8em;opacity:0.6;">${w.dept}</div>
+                    <div class="winner-name">${w.name}</div>
+                    <div class="winner-dept">ID: ${w.id} | ${w.dept}</div>
                 </div>`;
             });
             contentHtml += `</div>`;
@@ -311,19 +315,6 @@ function toggleHistory() {
         tabsHtml    += `</div>`;
         contentHtml += `</div>`;
         list.innerHTML = tabsHtml + contentHtml;
-
-        const slider = document.getElementById('tabsContainer');
-        let isDown = false, startX, scrollLeft;
-        slider.addEventListener('mousedown', e => {
-            isDown = true; slider.classList.add('dragging');
-            startX = e.pageX - slider.offsetLeft; scrollLeft = slider.scrollLeft;
-        });
-        slider.addEventListener('mouseleave',  () => { isDown = false; slider.classList.remove('dragging'); });
-        slider.addEventListener('mouseup',     () => { isDown = false; slider.classList.remove('dragging'); });
-        slider.addEventListener('mousemove',   e  => {
-            if (!isDown) return; e.preventDefault();
-            slider.scrollLeft = scrollLeft - (e.pageX - slider.offsetLeft - startX) * 2;
-        });
     }
     modal.style.display = 'flex';
 }
@@ -419,32 +410,26 @@ function animate() {
     planktons.forEach(p => { p.update(); p.draw(); });
     seaBubbles.forEach(b => { b.update(); b.draw(); });
 
+    // 🔥 [OPTIMIZED] วาดฟองอากาศแบบตัดคำสั่งประมวลผลที่ซ้ำซ้อนออก เพื่อการันตีความลื่นไหลระดับ 60 FPS
     if (treasureState === "bubble_burst") {
         burstBubbles.forEach(b => {
             b.y += b.vy;
             b.wobble += b.wobbleSpeed;
             b.x += b.vx + Math.sin(b.wobble) * 0.8;
             
-            if (b.blur > 0) {
-                ctx.save();
-                ctx.filter = `blur(${b.blur}px)`;
-            }
-            
             ctx.beginPath();
             ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(180, 230, 250, ${b.alpha * 0.22})`; 
+            ctx.fillStyle = `rgba(180, 230, 250, ${b.alpha * 0.25})`; 
             ctx.fill();
             
-            ctx.strokeStyle = `rgba(255, 255, 255, ${b.alpha * 0.65})`;
-            ctx.lineWidth = 1.2;
+            ctx.strokeStyle = `rgba(255, 255, 255, ${b.alpha * 0.5})`;
+            ctx.lineWidth = 1.5;
             ctx.stroke();
             
             ctx.beginPath();
-            ctx.arc(b.x - b.r * 0.3, b.y - b.r * 0.3, b.r * 0.15, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(255, 255, 255, ${b.alpha * 0.95})`;
+            ctx.arc(b.x - b.r * 0.3, b.y - b.r * 0.3, b.r * 0.18, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255, 255, 255, ${b.alpha * 0.8})`;
             ctx.fill();
-            
-            if (b.blur > 0) ctx.restore();
         });
     }
     requestAnimationFrame(animate);
