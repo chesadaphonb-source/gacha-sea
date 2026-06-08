@@ -1,6 +1,6 @@
-/* =============================================
-   OCEAN WISH SYSTEM — Deep Sea Theme 
-   ============================================= */
+/* =========================================================
+   OCEAN WISH SYSTEM — COMPLETE CLEAN STYLE (FLAT 3D RECTIFIED)
+   ========================================================= */
 
 :root {
     --bg-dark:      #030914; /* น้ำเงินเข้มก้นมหาสมุทร */
@@ -213,10 +213,7 @@ input[type="text"]:focus {
     border: 2px solid #1e365c;
     display: flex; flex-direction: column;
     min-height: 270px;
-    
-    /* 🔥 ปล่อยตั้งตรง 0 องศาตามสั่ง ไม่อารมณ์บิดเบี้ยวเบียดจอ */
     transform: scale(1);
-    
     animation: popInFlat 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.15) backwards;
     transition: transform 0.2s ease, border-color 0.2s, box-shadow 0.2s;
 }
@@ -438,4 +435,30 @@ input[type="text"]:focus {
     flex-grow: 1; overflow-y: auto; padding: 10px 0;
     scrollbar-width: thin; scrollbar-color: #1a3f66 #061124;
 }
-...
+.history-content-wrapper::-webkit-scrollbar { width: 6px; }
+.history-content-wrapper::-webkit-scrollbar-track { background: #061124; }
+.history-content-wrapper::-webkit-scrollbar-thumb { background: #1a3f66; border-radius: 4px; }
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+.history-item {
+    padding: 12px 20px;
+    border-bottom: 1px solid #0f2244;
+    display: flex; justify-content: space-between;
+    align-items: flex-start; font-size: 15px;
+    transition: background 0.15s;
+}
+.history-item:hover { background: rgba(255,255,255,0.02); }
+.history-item span {
+    text-align: right; color: #5887b5;
+    font-size: 14px; padding-left: 15px;
+    white-space: normal; max-width: 50%; word-break: break-word;
+}
+
+/* อนิมชันหายใจของคลื่นใต้ท้องทะเลลึก */
+@keyframes oceanPulse {
+    0%   { filter: brightness(0.8) contrast(1); }
+    50%  { filter: brightness(1.1) contrast(1.05); }
+    100% { filter: brightness(0.8) contrast(1); }
+}
