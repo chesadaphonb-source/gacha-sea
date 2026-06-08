@@ -1,5 +1,5 @@
 /* =========================================================
-   OCEAN WISH SYSTEM — ENGINE SCRIPT (HYPER BUBBLE & 3D CARD UPDATE)
+   OCEAN WISH SYSTEM — ENGINE SCRIPT (THE BULLETPROOF AQUATIC UPDATE)
    ========================================================= */
 
 /* --- Configuration --- */
@@ -19,10 +19,8 @@ let isWarping      = false;
 let currentTierColor = "#65d4a0";
 let winnersHistory = {};
 
-// 📦 แอนิเมชันสเตตกล่องสมบัติบาดาล
+// ระบบเอฟเฟกต์ตอนกดสุ่มรางวัล
 let treasureState = "none"; 
-let treasureTimer = 0;
-let chestOpenProgress = 0; 
 let burstBubbles = []; 
 
 // เอ็นจิ้นแสงจันทร์และแพลงก์ตอนเวทมนตร์ (Idle State)
@@ -33,8 +31,27 @@ let moonRays = [];
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzYNML38mXJT-x_5ya7HXKh9ZuIt2yYpAc5FsR8rKjEWxtqm95GqSuBf72i61vXAHjIsA/exec";
 
 /* =============================================
-   HELPER
+   ROBUST CSV PARSER (แก้บั๊กรายชื่อขาด ดึงครบ 466 คนแน่นอน)
    ============================================= */
+function parseCSVLine(line) {
+    let arr = [];
+    let quote = false;
+    let cell = "";
+    for (let i = 0; i < line.length; i++) {
+        let c = line[i];
+        if (c === '"') {
+            quote = !quote;
+        } else if (c === ',' && !quote) {
+            arr.push(cell.trim());
+            cell = "";
+        } else {
+            cell += c;
+        }
+    }
+    arr.push(cell.trim());
+    return arr;
+}
+
 function getDisplayData(winner) {
     if (winner.displayId !== undefined && winner.displayName !== undefined) {
         return { id: winner.displayId, name: winner.displayName, details: winner.displayDetails || [] };
@@ -46,7 +63,7 @@ function getDisplayData(winner) {
     const startSubIndex = keys.length > 1 ? 2 : 1;
     keys.slice(startSubIndex).forEach(k => {
         if (winner[k] && winner[k] !== "-" && String(winner[k]).trim() !== "")
-            detailList.push(`${k}: ${winner[k]}`);
+            detailList.push(winner[k]); // เอาเฉพาะเนื้อข้อมูลเพียว ๆ ไม่เอาหัวคอลัมน์มาเบียด
     });
     return { id: idVal, name: nameVal, details: detailList };
 }
@@ -82,14 +99,15 @@ function loadData() {
             const lines = csv.split(/\r?\n/).filter(l => l.trim() !== "");
             if (lines.length < 2) throw new Error("ไฟล์ CSV ว่างเปล่าหรือรูปแบบผิด");
 
-            headers = lines[0].split(',').map(h => h.trim());
+            // ยกระดับระบบล้างอักขระพิเศษส่วนเกินดักบั๊กเบี้ยว
+            headers = lines[0].split(',').map(h => h.replace(/^"|"$/g, '').trim());
+            
             participants = lines.slice(1).map(line => {
-                const data = line.match(/(?:[^,]*|"(?:[^"]|\\")*")(?:,|$)/g).map(s => {
-                    return s.replace(/,$/, '').replace(/^"|"$/g, '').replace(/\\"/g, '"').trim();
-                });
-                if (data.length < 1) return null;
+                const data = parseCSVLine(line);
+                if (data.length < 1 || data[0] === "") return null;
+                
                 let obj = {};
-                headers.forEach((h, i) => obj[h] = data[i] ? data[i] : "-");
+                headers.forEach((h, i) => obj[h] = data[i] !== undefined ? data[i] : "-");
                 obj._id = data[0] ? data[0] : `ID-${Math.random().toString(36).substr(2, 5)}`;
                 return obj;
             }).filter(item => item !== null);
@@ -100,7 +118,7 @@ function loadData() {
             document.getElementById('mainScreen').style.display     = 'block';
 
             updateUI(true);
-            alert(`โหลดข้อมูลสำเร็จ! ผู้เข้าร่วม: ${participants.length} คน`);
+            alert(`โหลดข้อมูลสำเร็จ! ดูดรายชื่อเข้าระบบ: ${participants.length} คนครบถ้วนโว้ยมึง!`);
         })
         .catch(err => {
             console.error(err);
@@ -172,13 +190,13 @@ function triggerWish() {
         }).catch(err => console.error(err));
     }
 
-    playAbyssalChestAnimation(displayWinners);
+    playAbyssalBubbleAnimation(displayWinners);
 }
 
 /* =========================================================
-   📦 THEME B: ABYSSAL TREASURE OPENING (ระบบแอนิเมชันกล่องสมบัติ)
+   🫧 NEW EFFECT: HYPER AQUATIC FOAM EXPLOSION (ฟองน้ำพุ่งถาโถมล้างหน้าจอ)
    ========================================================= */
-function playAbyssalChestAnimation(winners) {
+function playAbyssalBubbleAnimation(winners) {
     const tier = prizes[currentTier];
     const flash = document.getElementById('flashOverlay');
     const container = document.querySelector('.container');
@@ -191,47 +209,40 @@ function playAbyssalChestAnimation(winners) {
     histBtn.style.display   = 'none';
 
     treasureState = "bubble_burst";
-    treasureTimer = 0;
-    chestOpenProgress = 0;
     burstBubbles = [];
 
-    // 🔥 [อัปเกรด] เพิ่มกระหน่ำฝูงฟองสบู่ระเบิดเป็น 500 เม็ดสะใจเต็มพิกัดจอ!
-    for (let i = 0; i < 500; i++) {
-        let size = Math.random() * 6 + 2;
+    // 🔥 [อัปเกรด] สาดฝูงฟองสบู่ระเบิดสมจริงขึ้นถล่มเป็น 880 ลูก กระแทกพุ่งเต็มหน้าจอ!
+    for (let i = 0; i < 880; i++) {
+        let size = Math.random() * 9 + 1.5;
         burstBubbles.push({
             x: Math.random() * w,
-            y: h + Math.random() * 300,
+            y: h + Math.random() * 400,
             r: size,
-            vy: -(Math.random() * 14 + 7), // เร่งความเร็วพุ่งปรี๊ดดด
-            vx: (Math.random() - 0.5) * 3,
-            alpha: Math.random() * 0.7 + 0.3,
-            blur: size > 6 ? 2 : 0 // สุ่มมิติเบลอเลนส์ระยะตื้นลึก
+            vy: -(Math.random() * 16 + 6), // เร่งความเร็วพุ่งพรูขึ้นแกนตั้ง
+            vx: (Math.random() - 0.5) * 3.5,
+            alpha: Math.random() * 0.75 + 0.25,
+            wobble: Math.random() * Math.PI,
+            wobbleSpeed: Math.random() * 0.05 + 0.02,
+            blur: size > 7.5 ? 2.5 : 0 // เบลอระยะลึกตื้นเลนส์กล้อง
         });
     }
 
+    // จังหวะตื่นของแสงและบอร์ดการ์ด 3D
     setTimeout(() => {
-        treasureState = "chest_appear";
-    }, 1200);
-
-    setTimeout(() => {
-        treasureState = "chest_open";
-    }, 2600);
-
-    setTimeout(() => {
-        flash.style.background = '#010611';
-        flash.style.opacity    = '0.7';
+        flash.style.background = '#e0f7fa'; // แฟลชสว่างสีฟ้าน้ำทะเลนวลๆ
+        flash.style.opacity    = '0.9';
         showResults(winners, tier);
-    }, 4400);
+    }, 1800);
 
     setTimeout(() => {
         treasureState = "none";
         flash.style.opacity = '0';
         isWarping = false;
-    }, 5200);
+    }, 2500);
 }
 
 /* =============================================
-   SHOW RESULTS
+   SHOW RESULTS (ล็อกแสดงผล 3 ช่องเน้น ๆ: ID, ชื่อ-นามสกุล, สังกัด)
    ============================================= */
 function showResults(winners, tier) {
     const grid = document.getElementById('resultGrid');
@@ -244,16 +255,13 @@ function showResults(winners, tier) {
         const card = document.createElement('div');
         card.className = 'card';
         card.style.borderColor      = tier.color + 'aa';
-        
-        // 🔮 [อัปเกรด] สั่งแอนิเมชันให้การ์ด 3D ค่อย ๆ ทยอยเด้งกระจายมุมออกมาอย่างพรีเมียม
         card.style.animationDelay   = `${index * 0.06}s`;
         
-        // ผูกสีนีออนเรืองแสงใต้แผ่นป้ายตามเกรดรางวัลตรงตามภาพ Ref เป๊ะ ๆ
         card.style.setProperty('--glow-color', tier.color);
         card.style.boxShadow        = `0 15px 35px rgba(0,0,0,0.8), 0 0 25px ${tier.color}33`;
 
-        let subInfoHTML = "";
-        data.details.forEach(info => { subInfoHTML += `<div class="info-sub">${info}</div>`; });
+        // ล็อกเป้าดึงข้อมูลช่องที่ 3 (สังกัด) ออกมาโชว์แผ่นป้ายใบจริง
+        let affiliationText = data.details[0] !== undefined ? data.details[0] : "-";
 
         card.innerHTML = `
             <div class="card-glow-line" style="background:${tier.color}"></div>
@@ -262,7 +270,7 @@ function showResults(winners, tier) {
             </div>
             <div class="card-body">
                 <div class="info-main" style="color:${tier.color}; text-shadow: 0 0 10px ${tier.color}44;">${data.name}</div>
-                ${subInfoHTML}
+                <div class="info-sub">${affiliationText}</div>
             </div>
             <div class="card-shine-overlay"></div>`;
         grid.appendChild(card);
@@ -462,74 +470,6 @@ function initOceanEngine() {
     planktons  = Array.from({length: 90}, () => new BioPlankton());
 }
 
-function drawVectorChest(cx, cy, scale, openProgress) {
-    let cw = 160 * scale; 
-    let ch = 100 * scale; 
-    let lidH = 60 * scale; 
-
-    ctx.save();
-    ctx.shadowBlur = 25;
-    ctx.shadowColor = currentTierColor;
-
-    ctx.fillStyle = "#0c1b33";
-    ctx.strokeStyle = "#e0b84c";
-    ctx.lineWidth = 4 * scale;
-    ctx.beginPath();
-    ctx.rect(cx - cw/2, cy, cw, ch);
-    ctx.fill(); ctx.stroke();
-
-    ctx.fillStyle = "#e0b84c";
-    ctx.fillRect(cx - cw/2 + 15*scale, cy, 12*scale, ch);
-    ctx.fillRect(cx + cw/2 - 27*scale, cy, 12*scale, ch);
-
-    if (openProgress > 0.05) {
-        let opacity = Math.min(openProgress * 0.8, 0.8);
-        let glowGrad = ctx.createRadialGradient(cx, cy - (lidH * openProgress), 10, cx, cy - (lidH * openProgress), 200 * scale);
-        glowGrad.addColorStop(0, '#ffffff');
-        glowGrad.addColorStop(0.2, currentTierColor); 
-        glowGrad.addColorStop(0.6, `rgba(3, 212, 191, 0.2)`);
-        glowGrad.addColorStop(1, 'transparent');
-
-        ctx.save();
-        ctx.globalCompositeOperation = 'screen';
-        ctx.fillStyle = glowGrad;
-        ctx.beginPath();
-        ctx.arc(cx, cy, 180 * scale, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
-    }
-
-    ctx.save();
-    let lidYOffset = cy - (lidH * openProgress * 1.1); 
-    ctx.translate(cx, lidYOffset);
-    
-    ctx.fillStyle = "#0f2547";
-    ctx.strokeStyle = "#e0b84c";
-    ctx.beginPath();
-    ctx.arc(0, 0, cw/2, Math.PI, 0, false);
-    ctx.lineTo(cw/2, 5*scale);
-    ctx.lineTo(-cw/2, 5*scale);
-    ctx.closePath();
-    ctx.fill(); ctx.stroke();
-
-    ctx.fillStyle = "#e0b84c";
-    ctx.beginPath();
-    ctx.arc(0, 0, cw/2, Math.PI, Math.PI + 0.2, false);
-    ctx.lineTo(0, 5*scale);
-    ctx.closePath(); ctx.fill();
-    ctx.restore();
-
-    ctx.fillStyle = "#b38f2b";
-    ctx.strokeStyle = "#ffffff";
-    ctx.beginPath();
-    ctx.arc(cx, cy + ch*0.2, 14 * scale, 0, Math.PI*2);
-    ctx.fill(); ctx.stroke();
-    
-    ctx.fillStyle = "#000000";
-    ctx.fillRect(cx - 2*scale, cy + ch*0.16, 4*scale, 10*scale);
-    ctx.restore();
-}
-
 /* =============================================
    5. MAIN RENDER LOOP
    ============================================= */
@@ -540,35 +480,36 @@ function animate() {
     planktons.forEach(p => { p.update(); p.draw(); });
     seaBubbles.forEach(b => { b.update(); b.draw(); });
 
-    if (treasureState !== "none") {
-        if (treasureState === "bubble_burst" || treasureState === "chest_appear" || treasureState === "chest_open") {
-            burstBubbles.forEach(b => {
-                b.y += b.vy;
-                b.x += b.vx;
-                
-                // เอฟเฟกต์เบลอเลนส์ระยะลึกสำหรับฟองสบู่ลูกใหญ่
-                if (b.blur > 0) {
-                    ctx.save();
-                    ctx.filter = `blur(${b.blur}px)`;
-                }
-                
-                ctx.beginPath();
-                ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(224, 242, 254, ${b.alpha})`;
-                ctx.fill();
-                
-                if (b.blur > 0) ctx.restore();
-            });
-        }
-
-        if (treasureState === "chest_appear" || treasureState === "chest_open") {
-            let chestX = w / 2;
-            let chestY = h / 2 - 30;
-            if (treasureState === "chest_open") {
-                if (chestOpenProgress < 1.0) chestOpenProgress += 0.025;
+    // 🌊 รันเอนจิ้นฟองสบู่ความละเอียดสูงพุ่งระเบิดเต็มจอ (Specular Translucent Glass Effect)
+    if (treasureState === "bubble_burst") {
+        burstBubbles.forEach(b => {
+            b.y += b.vy;
+            b.wobble += b.wobbleSpeed;
+            b.x += b.vx + Math.sin(b.wobble) * 0.8;
+            
+            if (b.blur > 0) {
+                ctx.save();
+                ctx.filter = `blur(${b.blur}px)`;
             }
-            drawVectorChest(chestX, chestY, 1.2, chestOpenProgress);
-        }
+            
+            // วาดตัวฟองแก้วโปร่งแสงมีมิติจริงแบบไฮเอนด์
+            ctx.beginPath();
+            ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(180, 230, 250, ${b.alpha * 0.22})`; 
+            ctx.fill();
+            
+            ctx.strokeStyle = `rgba(255, 255, 255, ${b.alpha * 0.65})`;
+            ctx.lineWidth = 1.2;
+            ctx.stroke();
+            
+            // เพิ่มจุดสะท้อนแสงไฟวิบวับบนผิวกระจกฟองสบู่ (Specular Highlight Point)
+            ctx.beginPath();
+            ctx.arc(b.x - b.r * 0.3, b.y - b.r * 0.3, b.r * 0.15, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255, 255, 255, ${b.alpha * 0.95})`;
+            ctx.fill();
+            
+            if (b.blur > 0) ctx.restore();
+        });
     }
 
     requestAnimationFrame(animate);
