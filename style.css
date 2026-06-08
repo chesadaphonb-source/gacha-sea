@@ -178,7 +178,7 @@ input[type="text"]:focus {
 }
 
 /* ==============================================
-   RESULT SCREEN (อัปเกรดมุมมองมิติ 3D โฮโลแกรมการ์ด)
+   RESULT SCREEN (ลบมิติเอียงออก ➡️ ป้ายการ์ดตั้งตรงคลีนสมมาตร)
    ============================================== */
 #resultScreen {
     display: none;
@@ -187,7 +187,6 @@ input[type="text"]:focus {
     background: rgba(2, 6, 15, 0.96);
     z-index: 700;
     flex-direction: column;
-    perspective: 1200px;
 }
 
 .result-content {
@@ -203,10 +202,9 @@ input[type="text"]:focus {
     gap: 25px;
     max-width: 1200px;
     margin: 0 auto;
-    transform-style: preserve-3d;
 }
 
-/* ── 🃏 3D HOLOGRAPHIC CARDS ── */
+/* ── 🃏 PREMIUM FLAT CARDS (แผ่นป้ายตั้งตรงระนาบเคลียร์สายตา) ── */
 .card {
     position: relative;
     background: linear-gradient(145deg, #0d1a33 0%, #040914 100%);
@@ -215,18 +213,22 @@ input[type="text"]:focus {
     border: 2px solid #1e365c;
     display: flex; flex-direction: column;
     min-height: 270px;
-    transform: rotateX(12deg) rotateY(-10deg) translateZ(0px);
-    transform-style: preserve-3d;
-    animation: popIn3D 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) backwards;
-    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s;
+    
+    /* 🔥 ปล่อยตั้งตรง 0 องศาตามสั่ง ไม่อารมณ์บิดเบี้ยวเบียดจอ */
+    transform: scale(1);
+    
+    animation: popInFlat 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.15) backwards;
+    transition: transform 0.2s ease, border-color 0.2s, box-shadow 0.2s;
 }
 
+/* เอฟเฟกต์โฮเวอร์: ยกการ์ดพุ่งขึ้นแนวดิ่งนุ่ม ๆ */
 .card:hover {
-    transform: rotateX(0deg) rotateY(0deg) translateZ(30px) scale(1.06);
+    transform: translateY(-8px) scale(1.03);
     border-color: var(--glow-color);
-    box-shadow: 0 25px 50px rgba(0,0,0,0.9), 0 0 35px var(--glow-color);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.9), 0 0 30px var(--glow-color);
 }
 
+/* เส้นนีออนฉาบหัวแผ่นป้ายการ์ดเพิ่มมิติแสงเงา */
 .card-glow-line {
     position: absolute;
     top: 0; left: 0; width: 100%; height: 4px;
@@ -250,7 +252,6 @@ input[type="text"]:focus {
     justify-content: center;
     text-align: center;
     gap: 8px;
-    transform: translateZ(15px);
 }
 
 .info-main {
@@ -263,28 +264,30 @@ input[type="text"]:focus {
 
 .info-sub {
     font-size: 14px;
-    color: #a5f3fc; /* เร่งแสงสีเขียวมินต์นวลระยิบระยับรับช่องสังกัด */
+    color: #a5f3fc; /* แสงสีเขียวมินต์นวลระยิบระยับรับช่องสังกัด */
     font-weight: 500;
     line-height: 1.4;
     text-shadow: 0 0 8px rgba(45, 212, 191, 0.3);
 }
 
+/* แผ่นเลเยอร์ฉาบแสงสะท้อนรุ้งเงาวับบนผิวการ์ดเวลามีแสงส่อง (Shine Overlay) */
 .card-shine-overlay {
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 100%);
+    background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0) 50%, rgba(0,0,0,0.15) 100%);
     pointer-events: none;
     z-index: 5;
 }
 
-@keyframes popIn3D {
+/* 🔮 อนิมชันเด้งขยายตรง ๆ ทะยานขึ้นมาอย่างทรงพลังจากความว่างเปล่า */
+@keyframes popInFlat {
     from { 
-        transform: rotateX(-30deg) rotateY(40deg) translateZ(-200px) scale(0.4); 
+        transform: scale(0.6) translateY(40px); 
         opacity: 0; 
-        filter: brightness(3);
+        filter: brightness(2.5); 
     }
     to { 
-        transform: rotateX(12deg) rotateY(-10deg) translateZ(0px) scale(1); 
+        transform: scale(1) translateY(0); 
         opacity: 1;
         filter: brightness(1);
     }
