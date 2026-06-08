@@ -1,5 +1,5 @@
 /* =========================================================
-   OCEAN WISH SYSTEM — ENGINE SCRIPT (INSTANT WAVE SWEEP UPDATE)
+   OCEAN WISH SYSTEM — ENGINE SCRIPT (PRODUCTION CLEAN VERSION)
    ========================================================= */
 
 /* --- Configuration --- */
@@ -23,14 +23,14 @@ let winnersHistory = {};
 let treasureState = "none"; 
 let burstBubbles = []; 
 
-// เอ็นจิ้นแพลงก์ตอนเวทมนตร์และฟองอากาศธรรมชาติ (Idle State)
+// เอ็นจิ้นแพลงก์ตอนและฟองอากาศธรรมชาติ (Idle State)
 let seaBubbles = [];
 let planktons = [];
 
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzYNML38mXJT-x_5ya7HXKh9ZuIt2yYpAc5FsR8rKjEWxtqm95GqSuBf72i61vXAHjIsA/exec";
 
 /* =============================================
-   ROBUST CSV PARSER (ดักเออเร่อตัดคำ ดูดมาครบ 466 คน)
+   ROBUST CSV PARSER (ระบบตรวจสอบและแยกข้อมูลคอลัมน์)
    ============================================= */
 function parseCSVLine(line) {
     let arr = [];
@@ -96,7 +96,7 @@ function loadData() {
         .then(r => { if (!r.ok) throw new Error("เข้าถึงไฟล์ไม่ได้"); return r.text(); })
         .then(csv => {
             const lines = csv.split(/\r?\n/).filter(l => l.trim() !== "");
-            if (lines.length < 2) throw new Error("ไฟล์ CSV ว่างเปล่าหรือรูปแบบผิด");
+            if (lines.length < 2) throw new Error("ไฟล์ CSV ว่างเปล่าหรือรูปแบบผิดพลาด");
 
             headers = lines[0].split(',').map(h => h.replace(/^"|"$/g, '').trim());
             
@@ -116,7 +116,7 @@ function loadData() {
             document.getElementById('mainScreen').style.display     = 'block';
 
             updateUI(true);
-            alert(`โหลดข้อมูลสำเร็จ! ดูดรายชื่อเข้าระบบ: ${participants.length} คนครบถ้วนโว้ยมึง!`);
+            alert(`โหลดข้อมูลสำเร็จ! นำรายชื่อเข้าสู่ระบบจำนวน: ${participants.length} คน`);
         })
         .catch(err => {
             console.error(err);
@@ -127,8 +127,8 @@ function loadData() {
 
 function updateUI(showCount = false) {
     if (currentTier >= prizes.length) {
-        let endHtml = `<h1 class="gold-text" style="font-family:'Cinzel Decorative',serif;">🔱 จบกิจกรรมเจ้าสมุทร! 🔱</h1>
-                       <p style="color:#7fa6c7;margin-bottom:20px;">ขอบคุณผู้ร่วมสนุกทุกคน</p>
+        let endHtml = `<h1 class="gold-text" style="font-family:'Cinzel Decorative',serif;">🔱 จบกิจกรรมจับรางวัล 🔱</h1>
+                       <p style="color:#7fa6c7;margin-bottom:20px;">ขอขอบพระคุณผู้ร่วมสนุกทุกท่าน</p>
                        <button onclick="resetGame()" style="
                         padding:15px 40px;font-size:22px;font-family:'Kanit',sans-serif;
                         background:linear-gradient(45deg,#1e3f66,#2e5b88);
@@ -157,7 +157,7 @@ function updateUI(showCount = false) {
 }
 
 function triggerWish() {
-    if (participants.length === 0) return alert("รายชื่อหมดแล้ว!");
+    if (participants.length === 0) return alert("รายชื่อผู้ลุ้นรางวัลหมดแล้ว");
 
     const tier      = prizes[currentTier];
     const drawCount = Math.min(tier.count, participants.length);
@@ -192,7 +192,7 @@ function triggerWish() {
 }
 
 /* =========================================================
-   🫧 FIXED EFFECT: INSTANT BUBBLE WAVE (พุ่งกวาดจากขอบล่างขึ้นบนทันที ไร้จุดค้าง)
+   🫧 EFFECT: INSTANT BUBBLE WAVE (เอฟเฟกต์ฟองอากาศเคลื่อนที่จากล่างขึ้นบน)
    ========================================================= */
 function playAbyssalBubbleAnimation(winners) {
     const tier = prizes[currentTier];
@@ -209,14 +209,14 @@ function playAbyssalBubbleAnimation(winners) {
     treasureState = "bubble_burst";
     burstBubbles = [];
 
-    // ดึงพิกัด Y ขึ้นมาสแตนด์บายชิดขอบล่างจอพอดี เพื่อให้กดสุ่มปุ๊บพุ่งตัดขึ้นบนทันที ไร้อาการดีเลย์ค้าง!
+    // กำหนดพิกัดเริ่มต้นให้อยู่บริเวณขอบล่างของจอเพื่อความลื่นไหลจำนวน 700 ตัว
     for (let i = 0; i < 700; i++) {
         let size = Math.random() * 8 + 1.5;
         burstBubbles.push({
             x: Math.random() * w,
-            y: h + Math.random() * 100, // ชิดเป้าขอบล่างสุดกิ๊ก
+            y: h + Math.random() * 100, 
             r: size,
-            vy: -(Math.random() * 12 + 10), // เร่งความเร็วการลอยพุ่งผ่านหน้าจอแบบลื่นไหล
+            vy: -(Math.random() * 12 + 10), 
             vx: (Math.random() - 0.5) * 2.5,
             alpha: Math.random() * 0.75 + 0.25,
             wobble: Math.random() * Math.PI,
@@ -225,7 +225,7 @@ function playAbyssalBubbleAnimation(winners) {
         });
     }
 
-    // มวลฟองกวาดขึ้นพ้นขอบบนจอ (ใช้เวลา 1.3 วินาที) ค่อยฉายแผงรายชื่อกึ่งกลาง
+    // หน่วงเวลาให้เอฟเฟกต์ลอยพูนพ้นจอ แล้วเปิดหน้าต่างผลลัพธ์
     setTimeout(() => {
         flash.style.background = '#030914'; 
         flash.style.opacity    = '0.85';
@@ -240,7 +240,7 @@ function playAbyssalBubbleAnimation(winners) {
 }
 
 /* =============================================
-   SHOW RESULTS (ล็อกแสดงผล 3 ช่องเน้น ๆ ขาวคมชัด)
+   SHOW RESULTS (ฟังก์ชันจัดรูปแบบหน้าต่างแสดงผลลัพธ์)
    ============================================= */
 function showResults(winners, tier) {
     const grid = document.getElementById('resultGrid');
@@ -301,7 +301,7 @@ function toggleHistory() {
     const activePrizes = prizes.filter(p => winnersHistory[p.name] && winnersHistory[p.name].length > 0);
 
     if (activePrizes.length === 0) {
-        list.innerHTML = `<p style="text-align:center;color:#43719c;margin-top:50px;">ยังไม่มีรายนามผู้รับพรแห่งวารี</p>`;
+        list.innerHTML = `<p style="text-align:center;color:#43719c;margin-top:50px;">ยังไม่มีรายนามผู้ได้รับรางวัล</p>`;
     } else {
         let tabsHtml    = `<div class="history-tabs" id="tabsContainer">`;
         let contentHtml = `<div class="history-content-wrapper">`;
@@ -353,12 +353,12 @@ window.switchTab = function (event, tabId) {
 };
 
 function resetGame() {
-    if (!confirm("⚠️ WARNING: ต้องการล้างระบบทั้งหมด?\n(ประวัติจะหายไป และกลับสู่หน้าใส่ CSV)")) return;
+    if (!confirm("⚠️ WARNING: ต้องการรีเซ็ตระบบทั้งหมดหรือไม่?\n(ข้อมูลประวัติเดิมจะถูกล้างและกลับสู่หน้าแรก)")) return;
     window.location.reload();
 }
 
 /* =========================================================
-   4. CANVAS — LIFE BACKGROUND ENGINE (ไม่มีลำแสงกวนสายตา)
+   4. CANVAS — BACKGROUND PARTICLES ENGINE
    ========================================================= */
 const canvas = document.getElementById('starCanvas');
 const ctx    = canvas.getContext('2d');
@@ -440,6 +440,7 @@ function animate() {
     planktons.forEach(p => { p.update(); p.draw(); });
     seaBubbles.forEach(b => { b.update(); b.draw(); });
 
+    // รันกระบวนการคำนวณและฟื้นฟูเอฟเฟกต์ฟองอากาศเมื่อกดสุ่มรางวัล
     if (treasureState === "bubble_burst") {
         burstBubbles.forEach(b => {
             b.y += b.vy;
