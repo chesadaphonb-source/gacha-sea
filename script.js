@@ -202,7 +202,7 @@ function playAbyssalBubbleAnimation(winners) {
     burstBubbles = [];
 
     // 🔥 [FIXED] ลดจำนวนฟองลงเหลือ 160 ลูกเพื่อแก้กระตุก และเพิ่มขนาดรัศมีให้ใหญ่สมบูรณ์เต็มจอ
-    for (let i = 0; i < 180; i++) {
+    for (let i = 0; i < 200; i++) {
         let size = Math.random() * 25 + 10; // ปรับขนาดเพิ่มขึ้นเด่นชัดจากก้นจอ
         burstBubbles.push({
             x: Math.random() * w,
