@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ocean Wish System — Projector Premium Mode</title>
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Kanit:wght@300;400;700;800&display=swap" rel="stylesheet">
@@ -12,22 +11,16 @@
 </head>
 <body>
 
-    <!-- 🌊 แผ่นภาพพื้นหลังห้วงมหาสมุทรลึก -->
     <div id="forestBg"></div>
 
-    <!-- 🌌 แคนวาสสำหรับรันฝูงฟองอากาศและคลื่นน้ำเวทมนตร์ -->
     <canvas id="starCanvas"></canvas>
 
-    <!-- 🌫️ แผ่นแฟลชควบคุมจังหวะการบดบังของคลื่นวารี -->
     <div id="flashOverlay"></div>
 
-    <!-- 🔘 ปุ่มเรียกดูประวัติผู้โชคดีลอยมุมจอ -->
     <button class="btn-history-toggle" onclick="toggleHistory()">📜 History</button>
 
-    <!-- 📦กล่องหลักระบบสุ่ม จัดกึ่งกลางสมบูรณ์แบบ -->
     <div class="container" id="mainScreen">
         
-        <!-- กล่องที่ 1: หน้า Setup สำหรับให้แอดมินใส่ลิงก์ CSV (จะซ่อนออโต้เมื่อโหลดเสร็จ) -->
         <div class="setup-box" id="setupContainer">
             <div class="logo-wrap">
                 <span class="leaf-icon">🔱</span>
@@ -35,11 +28,10 @@
                 <span class="leaf-icon">🔱</span>
             </div>
             <p class="sub-text">Connecting to the Abyssal Core...</p>
-            <input type="text" id="sheetUrl" placeholder="วางลิงก์ CSV ตรงนี้เลยมึง" value="https://docs.google.com/spreadsheets/d/e/2PACX-1vSOJyT8_G58wE-9Fw9m3W0L4vP_xXb39tIexE7hXgMIn4N086tP62p_3Xb6a83nN29W7f384aO-8m0B/pub?output=csv">
+            <input type="text" id="sheetUrl" placeholder="วางลิงก์ CSV ตรงนี้เลยมึง" value="">
             <button class="btn-wish start-btn" onclick="loadData()">Load Data (Admin Only)</button>
         </div>
 
-        <!-- กล่องที่ 2: หน้าควบคุมการสุ่มรางวัล (จะยอมโผล่มาหลังจากโหลดข้อมูลสำเร็จเท่านั้น!) -->
         <div id="adminControls" style="display: none; margin-top: 20px;">
             <div id="bannerDisplay"></div>
             <div class="pool-count" id="poolCount">คงเหลือผู้ลุ้นรางวัล: 0 คน</div>
@@ -47,7 +39,6 @@
         </div>
     </div>
 
-    <!-- 🏆 หน้าต่างแสดงผลลัพธ์รายชื่อผู้โชคดี (Result Screen) -->
     <div id="resultScreen">
         <div class="result-header">
             <h1 id="resultTitle">RANK DISPLAY</h1>
@@ -61,7 +52,6 @@
         </div>
     </div>
 
-    <!-- 📜โมดัลแสดงประวัติการสุ่ม (History Modal) -->
     <div class="history-modal" id="historyModal" onclick="if(event.target===this) toggleHistory()">
         <div class="history-content">
             <div class="history-header">
