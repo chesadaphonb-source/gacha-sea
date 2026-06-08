@@ -202,14 +202,14 @@ function playAbyssalBubbleAnimation(winners) {
     burstBubbles = [];
 
     // 🔥 [FIXED] ลดจำนวนฟองลงเหลือ 160 ลูกเพื่อแก้กระตุก และเพิ่มขนาดรัศมีให้ใหญ่สมบูรณ์เต็มจอ
-    for (let i = 0; i < 160; i++) {
-        let size = Math.random() * 20 + 7; // ปรับขนาดเพิ่มขึ้นเด่นชัดจากก้นจอ
+    for (let i = 0; i < 180; i++) {
+        let size = Math.random() * 25 + 10; // ปรับขนาดเพิ่มขึ้นเด่นชัดจากก้นจอ
         burstBubbles.push({
             x: Math.random() * w,
-            y: h + Math.random() * 60, // ตั้งพิกัดให้สแตนด์บายชิดติดขอบล่างจอพอดี
+            y: h + Math.random() * 80, // ตั้งพิกัดให้สแตนด์บายชิดติดขอบล่างจอพอดี
             r: size,
-            vy: -(Math.random() * 8 + 12), // เพิ่มความเร็วในการพุ่งกวาดขึ้นด้านบน
-            vx: (Math.random() - 0.5) * 2.0,
+            vy: -(Math.random() * 2 + 5), // เพิ่มความเร็วในการพุ่งกวาดขึ้นด้านบน
+            vx: (Math.random() - 0.5) * 1.5,
             alpha: Math.random() * 0.7 + 0.3,
             wobble: Math.random() * Math.PI,
             wobbleSpeed: Math.random() * 0.04 + 0.02
@@ -227,7 +227,7 @@ function playAbyssalBubbleAnimation(winners) {
         treasureState = "none";
         flash.style.opacity = '0';
         isWarping = false;
-    }, 2100);
+    }, 10000);
 }
 
 /* =============================================
