@@ -1,5 +1,5 @@
 /* =========================================================
-   OCEAN WISH SYSTEM — ENGINE SCRIPT (PRODUCTION CLEAN VERSION)
+   OCEAN WISH SYSTEM — ENGINE SCRIPT (ABSOLUTE INDEX MAPPING VERSION)
    ========================================================= */
 
 /* --- Configuration --- */
@@ -19,18 +19,18 @@ let isWarping      = false;
 let currentTierColor = "#65d4a0";
 let winnersHistory = {};
 
-// ระบบเอฟเฟกต์ตอนกดสุ่มรางวัล
+// ระบบเอฟเฟกต์แสดงผลฟองอากาศ
 let treasureState = "none"; 
 let burstBubbles = []; 
 
-// เอ็นจิ้นแพลงก์ตอนและฟองอากาศธรรมชาติ (Idle State)
+// ระบบจำลองบรรยากาศใต้ท้องทะเล (Idle State)
 let seaBubbles = [];
 let planktons = [];
 
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxhNo1ApRREdL3HFX_e2lK0e40YXn8k3PiqZAOqHtvLC0N62ZXioYTID6OB7n6lAZ0rUw/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzYNML38mXJT-x_5ya7HXKh9ZuIt2yYpAc5FsR8rKjEWxtqm95GqSuBf72i61vXAHjIsA/exec";
 
 /* =============================================
-   ROBUST CSV PARSER (ระบบตรวจสอบและแยกข้อมูลคอลัมน์)
+   ROBUST CSV PARSER (ระบบแยกคำคอลัมน์ความละเอียดสูง)
    ============================================= */
 function parseCSVLine(line) {
     let arr = [];
@@ -52,19 +52,11 @@ function parseCSVLine(line) {
 }
 
 function getDisplayData(winner) {
-    if (winner.displayId !== undefined && winner.displayName !== undefined) {
-        return { id: winner.displayId, name: winner.displayName, details: winner.displayDetails || [] };
-    }
-    let keys = (headers && headers.length > 0) ? headers : Object.keys(winner).filter(k => k !== '_id');
-    const idVal   = winner._id || winner[keys[0]] || "-";
-    const nameVal = keys.length > 1 ? winner[keys[1]] : winner[keys[0]];
-    let detailList = [];
-    const startSubIndex = keys.length > 1 ? 2 : 1;
-    keys.slice(startSubIndex).forEach(k => {
-        if (winner[k] && winner[k] !== "-" && String(winner[k]).trim() !== "")
-            detailList.push(winner[k]);
-    });
-    return { id: idVal, name: nameVal, details: detailList };
+    return {
+        id: winner.id ? String(winner.id).trim() : "-",
+        name: winner.name ? String(winner.name).trim() : "-",
+        dept: winner.dept ? String(winner.dept).trim() : "-"
+    };
 }
 
 /* =============================================
@@ -87,27 +79,29 @@ window.onload = function () {
    ============================================= */
 function loadData() {
     const url = document.getElementById('sheetUrl').value.trim();
-    if (!url) return alert("กรุณาใส่ลิงก์ CSV");
+    if (!url) return alert("กรุณาใส่ลิงก์ CSV ให้ถูกต้อง");
 
     const btn = document.querySelector('#setupContainer button');
-    btn.innerText = "กำลังโหลด…"; btn.disabled = true;
+    btn.innerText = "กำลังโหลดข้อมูล…"; btn.disabled = true;
 
     fetch(url)
-        .then(r => { if (!r.ok) throw new Error("เข้าถึงไฟล์ไม่ได้"); return r.text(); })
+        .then(r => { if (!r.ok) throw new Error("ไม่สามารถเข้าถึงไฟล์ดังกล่าวได้"); return r.text(); })
         .then(csv => {
             const lines = csv.split(/\r?\n/).filter(l => l.trim() !== "");
-            if (lines.length < 2) throw new Error("ไฟล์ CSV ว่างเปล่าหรือรูปแบบผิดพลาด");
+            if (lines.length < 2) throw new Error("ไฟล์ CSV ว่างเปล่าหรือรูปแบบข้อมูลไม่ถูกต้อง");
 
-            headers = lines[0].split(',').map(h => h.replace(/^"|"$/g, '').trim());
+            headers = parseCSVLine(lines[0]).map(h => h.replace(/^"|"$/g, '').trim());
             
+            // 🔥 ล็อกตำแหน่งดัชนีแถวตรงๆ [0]=ID, [1]=ชื่อ, [2]=สังกัด หมดปัญหาดึงคีย์วรรคเพี้ยน
             participants = lines.slice(1).map(line => {
                 const data = parseCSVLine(line);
                 if (data.length < 1 || data[0] === "") return null;
                 
-                let obj = {};
-                headers.forEach((h, i) => obj[h] = data[i] !== undefined ? data[i] : "-");
-                obj._id = data[0] ? data[0] : `ID-${Math.random().toString(36).substr(2, 5)}`;
-                return obj;
+                return {
+                    id: data[0] !== undefined ? String(data[0]).replace(/^"|"$/g, '').trim() : "-",
+                    name: data[1] !== undefined ? String(data[1]).replace(/^"|"$/g, '').trim() : "-",
+                    dept: data[2] !== undefined ? String(data[2]).replace(/^"|"$/g, '').trim() : "-"
+                };
             }).filter(item => item !== null);
 
             prizes.forEach(p => winnersHistory[p.name] = []);
@@ -127,7 +121,7 @@ function loadData() {
 
 function updateUI(showCount = false) {
     if (currentTier >= prizes.length) {
-        let endHtml = `<h1 class="gold-text" style="font-family:'Cinzel Decorative',serif;">🔱 จบกิจกรรมจับรางวัล 🔱</h1>
+        let endHtml = `<h1 class="gold-text" style="font-family:'Cinzel Decorative',serif;">🔱 จบกิจกรรมการจับรางวัล 🔱</h1>
                        <p style="color:#7fa6c7;margin-bottom:20px;">ขอขอบพระคุณผู้ร่วมสนุกทุกท่าน</p>
                        <button onclick="resetGame()" style="
                         padding:15px 40px;font-size:22px;font-family:'Kanit',sans-serif;
@@ -170,8 +164,7 @@ function triggerWish() {
     participants = participants.slice(drawCount);
 
     const displayWinners = rawWinners.map(w => {
-        const d = getDisplayData(w);
-        return { _raw: w, displayId: d.id, displayName: d.name, displayDetails: d.details };
+        return getDisplayData(w); 
     });
 
     if (!winnersHistory[tier.name]) winnersHistory[tier.name] = [];
@@ -180,7 +173,7 @@ function triggerWish() {
     updateUI(true);
 
     if (typeof GOOGLE_SCRIPT_URL !== 'undefined' && GOOGLE_SCRIPT_URL) {
-        const sheetData = displayWinners.map(d => ({ id: d.displayId, name: d.displayName, dept: d.displayDetails[0] || "-" }));
+        const sheetData = displayWinners.map(d => ({ id: d.id, name: d.name, dept: d.dept }));
         fetch(GOOGLE_SCRIPT_URL, {
             method: "POST", mode: "no-cors",
             headers: { "Content-Type": "application/json" },
@@ -192,7 +185,7 @@ function triggerWish() {
 }
 
 /* =========================================================
-   🫧 EFFECT: INSTANT BUBBLE WAVE (เอฟเฟกต์ฟองอากาศเคลื่อนที่จากล่างขึ้นบน)
+   🫧 EFFECT: INSTANT BUBBLE WAVE (เอฟเฟกต์ฟองอากาศลอยตัวกวาดขึ้นบน)
    ========================================================= */
 function playAbyssalBubbleAnimation(winners) {
     const tier = prizes[currentTier];
@@ -209,14 +202,13 @@ function playAbyssalBubbleAnimation(winners) {
     treasureState = "bubble_burst";
     burstBubbles = [];
 
-    // กำหนดพิกัดเริ่มต้นให้อยู่บริเวณขอบล่างของจอเพื่อความลื่นไหลจำนวน 700 ตัว
     for (let i = 0; i < 700; i++) {
         let size = Math.random() * 8 + 1.5;
         burstBubbles.push({
             x: Math.random() * w,
             y: h + Math.random() * 100, 
             r: size,
-            vy: -(Math.random() * 12 + 10), 
+            vy: -(Math.random() * 13 + 10), 
             vx: (Math.random() - 0.5) * 2.5,
             alpha: Math.random() * 0.75 + 0.25,
             wobble: Math.random() * Math.PI,
@@ -225,7 +217,6 @@ function playAbyssalBubbleAnimation(winners) {
         });
     }
 
-    // หน่วงเวลาให้เอฟเฟกต์ลอยพูนพ้นจอ แล้วเปิดหน้าต่างผลลัพธ์
     setTimeout(() => {
         flash.style.background = '#030914'; 
         flash.style.opacity    = '0.85';
@@ -240,7 +231,7 @@ function playAbyssalBubbleAnimation(winners) {
 }
 
 /* =============================================
-   SHOW RESULTS (ฟังก์ชันจัดรูปแบบหน้าต่างแสดงผลลัพธ์)
+   SHOW RESULTS (แสดงการ์ดผู้โชคดีระนาบตรง)
    ============================================= */
 function showResults(winners, tier) {
     const grid = document.getElementById('resultGrid');
@@ -249,7 +240,6 @@ function showResults(winners, tier) {
     grid.innerHTML = "";
 
     winners.forEach((w, index) => {
-        const data = getDisplayData(w);
         const card = document.createElement('div');
         card.className = 'card';
         card.style.borderColor      = tier.color + 'aa';
@@ -258,16 +248,14 @@ function showResults(winners, tier) {
         card.style.setProperty('--glow-color', tier.color);
         card.style.boxShadow        = `0 15px 35px rgba(0,0,0,0.8), 0 0 25px ${tier.color}33`;
 
-        let affiliationText = data.details[0] !== undefined ? data.details[0] : "-";
-
         card.innerHTML = `
             <div class="card-glow-line" style="background:${tier.color}"></div>
             <div class="card-header" style="background: linear-gradient(135deg, ${tier.color} 0%, #040914 140%); color:#ffffff;">
-                ${data.id}
+                ${w.id}
             </div>
             <div class="card-body">
-                <div class="info-main" style="color:${tier.color}; text-shadow: 0 0 10px ${tier.color}44;">${data.name}</div>
-                <div class="info-sub">${affiliationText}</div>
+                <div class="info-main" style="color:${tier.color}; text-shadow: 0 0 10px ${tier.color}44;">${w.name}</div>
+                <div class="info-sub">${w.dept}</div>
             </div>
             <div class="card-shine-overlay"></div>`;
         grid.appendChild(card);
@@ -289,9 +277,6 @@ function nextRound() {
     updateUI(true);
 }
 
-/* =============================================
-   3. HISTORY & MODAL CONTROL
-   ============================================= */
 function toggleHistory() {
     const modal = document.getElementById('historyModal');
     const list  = document.getElementById('historyList');
@@ -315,11 +300,9 @@ function toggleHistory() {
 
             contentHtml += `<div id="tab-${index}" class="tab-content ${isActive}">`;
             winners.forEach(w => {
-                const data    = getDisplayData(w);
-                const subText = data.details.length > 0 ? data.details[0] : "-";
                 contentHtml += `<div class="history-item">
-                    <div style="font-weight:bold;">${data.name}</div>
-                    <div style="font-size:0.8em;opacity:0.6;">${subText}</div>
+                    <div style="font-weight:bold;">${w.name}</div>
+                    <div style="font-size:0.8em;opacity:0.6;">${w.dept}</div>
                 </div>`;
             });
             contentHtml += `</div>`;
@@ -431,16 +414,11 @@ function initOceanEngine() {
     planktons  = Array.from({length: 90}, () => new BioPlankton());
 }
 
-/* =============================================
-   5. MAIN RENDER LOOP
-   ============================================= */
 function animate() {
     ctx.clearRect(0, 0, w, h);
-
     planktons.forEach(p => { p.update(); p.draw(); });
     seaBubbles.forEach(b => { b.update(); b.draw(); });
 
-    // รันกระบวนการคำนวณและฟื้นฟูเอฟเฟกต์ฟองอากาศเมื่อกดสุ่มรางวัล
     if (treasureState === "bubble_burst") {
         burstBubbles.forEach(b => {
             b.y += b.vy;
@@ -469,6 +447,5 @@ function animate() {
             if (b.blur > 0) ctx.restore();
         });
     }
-
     requestAnimationFrame(animate);
 }
