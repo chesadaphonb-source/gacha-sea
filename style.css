@@ -27,7 +27,7 @@ body {
     align-items: center;
 }
 
-/* ── 🌊 ชั้นผูกภาพใต้ท้องทะเลลึก ── */
+/* ── ภาพพื้นหลัง ── */
 #forestBg {
     position: fixed;
     top: 0; left: 0;
@@ -176,7 +176,7 @@ input[type="text"]:focus {
 }
 
 /* ==============================================
-   RESULT SCREEN (จัดระเบียบโครงสร้างกึ่งกลางระนาบตรง)
+   RESULT SCREEN (หน้าจอแสดงผลการ์ดรายชื่อ)
    ============================================== */
 #resultScreen {
     display: none;
@@ -339,39 +339,46 @@ input[type="text"]:focus {
     background: rgba(45, 212, 191, 0.12);
 }
 
-/* ==============================
-   HISTORY MODAL SECTION
-   ============================== */
+/* ==============================================
+   📊 PREMIUM HISTORY DRAWER (🔥 FIXED: ปรับปรุงโครงสร้างให้อยู่ฝั่งขวาพรีเมียม)
+   ============================================== */
 .history-modal {
     display: none;
     position: fixed; top: 0; left: 0;
     width: 100%; height: 100%;
-    background: rgba(1, 4, 10, 0.9);
+    background: rgba(1, 4, 10, 0.5);
     z-index: 2000;
-    justify-content: center; align-items: center;
-    backdrop-filter: blur(12px);
+    justify-content: flex-end; /* บังคับจัดชิดขอบฝั่งขวาสุดของหน้าจอ */
+    align-items: stretch;
+    backdrop-filter: blur(8px);
 }
 
 .history-content {
-    background: #061124;
-    width: 95%; max-width: 700px; max-height: 85vh;
-    border-radius: 16px;
-    border: 1px solid rgba(45, 212, 191, 0.3);
+    background: linear-gradient(180deg, #061124 0%, #030a17 100%);
+    width: 100%; 
+    max-width: 440px; /* กำหนดความกว้างของแถบประวัติให้เหมาะสมเมื่อขึ้นจอใหญ่ */
+    height: 100vh;
+    border-radius: 0; 
+    border-left: 2px solid rgba(224, 184, 76, 0.4); /* ขอบลวดลายออร่าทองคำ */
     display: flex; 
-    flex-shrink: 0;
     flex-direction: column;
     overflow: hidden;
-    animation: fadeIn 0.3s ease-out;
-    box-shadow: 0 0 60px rgba(0,0,0,0.8), 0 0 30px rgba(11,35,71,0.2);
+    box-shadow: -15px 0 40px rgba(0,0,0,0.8);
+    animation: slideInRight 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideInRight {
+    from { transform: translateX(100%); }
+    to   { transform: translateX(0); }
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.95) translateY(10px); }
-    to   { opacity: 1; transform: scale(1)    translateY(0); }
+    from { opacity: 0; }
+    to   { opacity: 1; }
 }
 
 .history-header {
-    padding: 15px 20px;
+    padding: 20px;
     background: #030a17;
     border-bottom: 1px solid rgba(45, 212, 191, 0.2);
     display: flex; justify-content: space-between; align-items: center;
@@ -395,26 +402,24 @@ input[type="text"]:focus {
 .history-body {
     display: flex; flex-direction: column;
     flex: 1; min-height: 0;
-    background: #061124; overflow: hidden;
+    background: transparent; overflow: hidden;
 }
 .history-tabs {
     display: flex; gap: 8px;
     padding: 0 15px;
-    background: #061124;
+    background: #040d1c;
     border-bottom: 2px solid #0f2244;
     overflow-x: auto; white-space: nowrap;
     flex-shrink: 0;
     scrollbar-width: none;
-    cursor: grab; user-select: none;
 }
 .history-tabs::-webkit-scrollbar { display: none; }
-.history-tabs.dragging { cursor: grabbing; }
 
 .tab-btn {
     background: transparent; border: none;
     color: #5887b5;
     padding: 14px 10px;
-    font-family: 'Kanit', sans-serif; font-size: 15px; font-weight: 600;
+    font-family: 'Kanit', sans-serif; font-size: 14px; font-weight: 600;
     cursor: pointer; position: relative;
     transition: color 0.2s;
 }
@@ -433,24 +438,31 @@ input[type="text"]:focus {
     scrollbar-width: thin; scrollbar-color: #1a3f66 #061124;
 }
 .history-content-wrapper::-webkit-scrollbar { width: 6px; }
-.history-content-wrapper::-webkit-scrollbar-track { background: #061124; }
+.history-content-wrapper::-webkit-scrollbar-track { background: transparent; }
 .history-content-wrapper::-webkit-scrollbar-thumb { background: #1a3f66; border-radius: 4px; }
 
 .tab-content { display: none; }
 .tab-content.active { display: block; }
 
+/* ลวดลายแถวประวัติรายชื่อ */
 .history-item {
-    padding: 12px 20px;
+    padding: 16px 25px;
     border-bottom: 1px solid #0f2244;
-    display: flex; justify-content: space-between;
-    align-items: flex-start; font-size: 15px;
+    display: flex; 
+    flex-direction: column;
+    gap: 4px;
     transition: background 0.15s;
 }
-.history-item:hover { background: rgba(255,255,255,0.02); }
-.history-item span {
-    text-align: right; color: #5887b5;
-    font-size: 14px; padding-left: 15px;
-    white-space: normal; max-width: 50%; word-break: break-word;
+.history-item:hover { background: rgba(45, 212, 191, 0.05); }
+
+.history-item .winner-name {
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--cream);
+}
+.history-item .winner-dept {
+    font-size: 13px;
+    color: #5887b5;
 }
 
 @keyframes oceanPulse {
