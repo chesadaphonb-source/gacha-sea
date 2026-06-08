@@ -4,11 +4,11 @@
 
 /* --- Configuration --- */
 const prizes = [
-    { name: "Rank 5 (General)", count: 50, color: "#65d4a0" },
-    { name: "Rank 4 (Rare)",    count: 30, color: "#c084fc" },
-    { name: "Rank 3 (Epic)",    count: 15, color: "#f472b6" },
-    { name: "Rank 2 (Vice)",    count: 5,  color: "#fbbf24" },
-    { name: "Rank 1 (Grand)",   count: 3,  color: "#f59e0b" }
+    { name: "รางวัล 5 ", count: 50, color: "#65d4a0" },
+    { name: "รางวัล 4 ",    count: 30, color: "#c084fc" },
+    { name: "รางวัล 3 ",    count: 15, color: "#f472b6" },
+    { name: "รางวัล 2 ",    count: 5,  color: "#fbbf24" },
+    { name: "รางวัล 1 ",   count: 3,  color: "#f59e0b" }
 ];
 
 /* --- Game State --- */
