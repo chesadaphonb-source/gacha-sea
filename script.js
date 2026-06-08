@@ -244,7 +244,7 @@ function showResults(winners, tier) {
         card.className = 'card';
         card.style.width = '260px';
         card.style.borderColor      = tier.color + 'aa';
-        card.style.animationDelay   = `${index * 1.5}s`;
+        card.style.animationDelay   = `${index * 0.5}s`;
         card.style.animationDuration = '1.5s';
         
         card.style.setProperty('--glow-color', tier.color);
