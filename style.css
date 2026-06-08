@@ -205,9 +205,9 @@ input[type="text"]:focus {
 
 .result-content {
     width: 100%;
-    max-width: 1200px;
+    max-width: 100%;
     flex: 1 1 auto;
-    overflow-y: auto;
+    overflow-y: hidden;
     padding: 20px 40px 120px 40px;
     box-sizing: border-box;
     display: flex;
@@ -215,7 +215,7 @@ input[type="text"]:focus {
 }
 
 .result-grid {
-    display: grid;
+    display: flex;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
     gap: 25px;
     width: 100%;
