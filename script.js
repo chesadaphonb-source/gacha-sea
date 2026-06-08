@@ -27,7 +27,7 @@ let burstBubbles = [];
 let seaBubbles = [];
 let planktons = [];
 
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzYNML38mXJT-x_5ya7HXKh9ZuIt2yYpAc5FsR8rKjEWxtqm95GqSuBf72i61vXAHjIsA/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxhNo1ApRREdL3HFX_e2lK0e40YXn8k3PiqZAOqHtvLC0N62ZXioYTID6OB7n6lAZ0rUw/exec";
 
 /* =============================================
    ROBUST CSV PARSER (ระบบตรวจสอบและแยกข้อมูลคอลัมน์)
