@@ -1,5 +1,5 @@
 /* =========================================================
-   OCEAN WISH SYSTEM — ENGINE SCRIPT (THE BULLETPROOF AQUATIC UPDATE)
+   OCEAN WISH SYSTEM — ENGINE SCRIPT (INSTANT WAVE SWEEP UPDATE)
    ========================================================= */
 
 /* --- Configuration --- */
@@ -23,15 +23,14 @@ let winnersHistory = {};
 let treasureState = "none"; 
 let burstBubbles = []; 
 
-// เอ็นจิ้นแสงจันทร์และแพลงก์ตอนเวทมนตร์ (Idle State)
+// เอ็นจิ้นแพลงก์ตอนเวทมนตร์และฟองอากาศธรรมชาติ (Idle State)
 let seaBubbles = [];
 let planktons = [];
-let moonRays = [];
 
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzYNML38mXJT-x_5ya7HXKh9ZuIt2yYpAc5FsR8rKjEWxtqm95GqSuBf72i61vXAHjIsA/exec";
 
 /* =============================================
-   ROBUST CSV PARSER (แก้บั๊กรายชื่อขาด ดึงครบ 466 คนแน่นอน)
+   ROBUST CSV PARSER (ดักเออเร่อตัดคำ ดูดมาครบ 466 คน)
    ============================================= */
 function parseCSVLine(line) {
     let arr = [];
@@ -193,7 +192,7 @@ function triggerWish() {
 }
 
 /* =========================================================
-   🫧 EFFECT: HYPER AQUATIC FOAM EXPLOSION (ระเบิดฟองกระจายถมจอสมจริง)
+   🫧 FIXED EFFECT: INSTANT BUBBLE WAVE (พุ่งกวาดจากขอบล่างขึ้นบนทันที ไร้จุดค้าง)
    ========================================================= */
 function playAbyssalBubbleAnimation(winners) {
     const tier = prizes[currentTier];
@@ -210,37 +209,38 @@ function playAbyssalBubbleAnimation(winners) {
     treasureState = "bubble_burst";
     burstBubbles = [];
 
-    // สาดฟองสบู่ระเบิดสมจริง 880 ลูก ถล่มพุ่งพรูขึ้นแกนตั้ง
-    for (let i = 0; i < 880; i++) {
-        let size = Math.random() * 9 + 1.5;
+    // ดึงพิกัด Y ขึ้นมาสแตนด์บายชิดขอบล่างจอพอดี เพื่อให้กดสุ่มปุ๊บพุ่งตัดขึ้นบนทันที ไร้อาการดีเลย์ค้าง!
+    for (let i = 0; i < 700; i++) {
+        let size = Math.random() * 8 + 1.5;
         burstBubbles.push({
             x: Math.random() * w,
-            y: h + Math.random() * 400,
+            y: h + Math.random() * 100, // ชิดเป้าขอบล่างสุดกิ๊ก
             r: size,
-            vy: -(Math.random() * 16 + 6), 
-            vx: (Math.random() - 0.5) * 3.5,
+            vy: -(Math.random() * 12 + 10), // เร่งความเร็วการลอยพุ่งผ่านหน้าจอแบบลื่นไหล
+            vx: (Math.random() - 0.5) * 2.5,
             alpha: Math.random() * 0.75 + 0.25,
             wobble: Math.random() * Math.PI,
-            wobbleSpeed: Math.random() * 0.05 + 0.02,
-            blur: size > 7.5 ? 2.5 : 0 
+            wobbleSpeed: Math.random() * 0.04 + 0.02,
+            blur: size > 6.5 ? 1.5 : 0 
         });
     }
 
+    // มวลฟองกวาดขึ้นพ้นขอบบนจอ (ใช้เวลา 1.3 วินาที) ค่อยฉายแผงรายชื่อกึ่งกลาง
     setTimeout(() => {
-        flash.style.background = '#e0f7fa'; 
-        flash.style.opacity    = '0.9';
+        flash.style.background = '#030914'; 
+        flash.style.opacity    = '0.85';
         showResults(winners, tier);
-    }, 1800);
+    }, 1300);
 
     setTimeout(() => {
         treasureState = "none";
         flash.style.opacity = '0';
         isWarping = false;
-    }, 2500);
+    }, 2000);
 }
 
 /* =============================================
-   SHOW RESULTS (ล็อกแสดงผล 3 ช่องเน้น ๆ + แก้บั๊กสีหัวการ์ดจมหาย)
+   SHOW RESULTS (ล็อกแสดงผล 3 ช่องเน้น ๆ ขาวคมชัด)
    ============================================= */
 function showResults(winners, tier) {
     const grid = document.getElementById('resultGrid');
@@ -260,7 +260,6 @@ function showResults(winners, tier) {
 
         let affiliationText = data.details[0] !== undefined ? data.details[0] : "-";
 
-        // 🔥 [FIXED] เปลี่ยนจาก color:#040914 เป็น color:#ffffff ให้หัว ID สว่างวาบอ่านง่ายชัดเจนพรีเมียมสัส
         card.innerHTML = `
             <div class="card-glow-line" style="background:${tier.color}"></div>
             <div class="card-header" style="background: linear-gradient(135deg, ${tier.color} 0%, #040914 140%); color:#ffffff;">
@@ -359,7 +358,7 @@ function resetGame() {
 }
 
 /* =========================================================
-   4. CANVAS — ETHEREAL MOONLIGHT ENGINE
+   4. CANVAS — LIFE BACKGROUND ENGINE (ไม่มีลำแสงกวนสายตา)
    ========================================================= */
 const canvas = document.getElementById('starCanvas');
 const ctx    = canvas.getContext('2d');
@@ -370,42 +369,6 @@ function resize() {
     h = canvas.height = window.innerHeight;
 }
 window.addEventListener('resize', resize); resize();
-
-class MoonlightRay {
-    constructor() {
-        this.x = Math.random() * w;
-        this.width = Math.random() * 90 + 40;
-        this.angle = (Math.random() * 5 + 15) * (Math.PI / 180);
-        this.phase = Math.random() * Math.PI * 2;
-        this.speed = Math.random() * 0.003 + 0.001;
-        this.alphaMax = Math.random() * 0.12 + 0.05;
-    }
-    update() { this.phase += this.speed; }
-    draw() {
-        let currentAngle = this.angle + Math.sin(this.phase) * 0.03;
-        let currentAlpha = this.alphaMax * (0.7 + Math.sin(this.phase * 2) * 0.3);
-
-        ctx.save();
-        ctx.globalCompositeOperation = 'screen';
-        let length = h * 1.5;
-        let targetX = this.x + Math.sin(currentAngle) * length;
-        let targetY = Math.cos(currentAngle) * length;
-
-        let rayGrad = ctx.createLinearGradient(this.x, 0, targetX, targetY);
-        rayGrad.addColorStop(0, `rgba(165, 243, 252, ${currentAlpha})`);
-        rayGrad.addColorStop(0.4, `rgba(56, 189, 248, ${currentAlpha * 0.4})`);
-        rayGrad.addColorStop(1, 'transparent');
-
-        ctx.fillStyle = rayGrad;
-        ctx.beginPath();
-        ctx.moveTo(this.x - this.width / 2, 0);
-        ctx.lineTo(this.x + this.width / 2, 0);
-        ctx.lineTo(targetX + this.width, targetY);
-        ctx.lineTo(targetX - this.width, targetY);
-        ctx.closePath(); ctx.fill();
-        ctx.restore();
-    }
-}
 
 class BioPlankton {
     constructor() { this.reset(); this.y = Math.random() * h; }
@@ -465,7 +428,6 @@ class SeaBubble {
 
 function initOceanEngine() {
     seaBubbles = Array.from({length: 40}, () => new SeaBubble());
-    moonRays   = Array.from({length: 5}, () => new MoonlightRay());
     planktons  = Array.from({length: 90}, () => new BioPlankton());
 }
 
@@ -475,11 +437,9 @@ function initOceanEngine() {
 function animate() {
     ctx.clearRect(0, 0, w, h);
 
-    moonRays.forEach(r => { r.update(); r.draw(); });
     planktons.forEach(p => { p.update(); p.draw(); });
     seaBubbles.forEach(b => { b.update(); b.draw(); });
 
-    // 🌊 รันเอนจิ้นฟองสบู่ความละเอียดสูงพุ่งระเบิดเต็มจอ
     if (treasureState === "bubble_burst") {
         burstBubbles.forEach(b => {
             b.y += b.vy;
