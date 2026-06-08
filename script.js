@@ -240,7 +240,7 @@ function playAbyssalBubbleAnimation(winners) {
 }
 
 /* =============================================
-   SHOW RESULTS (ล็อกแสดงผล 3 ช่องเน้น ๆ)
+   SHOW RESULTS (ล็อกแสดงผล 3 ช่องเน้น ๆ + แก้บั๊กสีหัวการ์ดจมหาย)
    ============================================= */
 function showResults(winners, tier) {
     const grid = document.getElementById('resultGrid');
@@ -260,9 +260,10 @@ function showResults(winners, tier) {
 
         let affiliationText = data.details[0] !== undefined ? data.details[0] : "-";
 
+        // 🔥 [FIXED] เปลี่ยนจาก color:#040914 เป็น color:#ffffff ให้หัว ID สว่างวาบอ่านง่ายชัดเจนพรีเมียมสัส
         card.innerHTML = `
             <div class="card-glow-line" style="background:${tier.color}"></div>
-            <div class="card-header" style="background: linear-gradient(135deg, ${tier.color} 0%, #040914 140%); color:#040914;">
+            <div class="card-header" style="background: linear-gradient(135deg, ${tier.color} 0%, #040914 140%); color:#ffffff;">
                 ${data.id}
             </div>
             <div class="card-body">
