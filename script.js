@@ -27,7 +27,7 @@ let burstBubbles = [];
 let seaBubbles = [];
 let planktons = [];
 
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzYNML38mXJT-x_5ya7HXKh9ZuIt2yYpAc5FsR8rKjEWxtqm95GqSuBf72i61vXAHjIsA/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxkgkehiOeUbvmFouaN8Dnm4UNCwYE4jbD1rKH7FKuU3lS30x5donicN0ivbMlvhLSgNw/exec";
 
 /* =============================================
    ROBUST CSV PARSER
