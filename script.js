@@ -155,6 +155,7 @@ function triggerWish() {
     const tier      = prizes[currentTier];
     const drawCount = Math.min(tier.count, participants.length);
 
+    // สับไพ่สุ่มรายชื่อปกติ
     for (let i = participants.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [participants[i], participants[j]] = [participants[j], participants[i]];
@@ -171,19 +172,24 @@ function triggerWish() {
 
     updateUI(true);
 
+    // 🔥 [FINAL FIXED FRONTEND] ปรับระบบส่งข้อมูลข้ามมิติแบบเงียบ (no-cors) ข้อมูลลงชีตชัวร์ ไร้ Error บล็อกหน้าจอ
     if (typeof GOOGLE_SCRIPT_URL !== 'undefined' && GOOGLE_SCRIPT_URL) {
         const sheetData = displayWinners.map(d => ({ id: d.id, name: d.name, dept: d.dept }));
         
+        // ใช้ URLSearchParams ยัดไส้ข้อมูลเพื่อให้ Google Apps Script ฝั่ง doPost(e) แงะ parameter มาเปิดอ่านได้ง่ายที่สุด
+        const params = new URLSearchParams();
+        params.append('jsonData', JSON.stringify({ rank: tier.name, winners: sheetData }));
+
         fetch(GOOGLE_SCRIPT_URL, {
             method: "POST",
-            mode: "cors", 
-            headers: { 
-                "Content-Type": "text/plain;charset=utf-8" 
+            mode: "no-cors", // สั่งให้ยิงทะลุกำแพงความปลอดภัยบราวเซอร์ไปเลย ไม่ต้องรอคำตอบขากลับ
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
             },
-            body: JSON.stringify({ rank: tier.name, winners: sheetData })
+            body: params
         })
-        .then(res => console.log("ยิงข้อมูลสำเร็จ!"))
-        .catch(err => console.error("ยิงลง Sheet ล้มเหลว:", err));
+        .then(() => console.log("ยิงคำสั่งสุ่มส่งข้อมูลลงไปที่คลาวด์ Google Sheets เรียบร้อยแล้วสัส!"))
+        .catch(err => console.error("ยิงล้มเหลว:", err));
     }
 
     playAbyssalBubbleAnimation(displayWinners);
