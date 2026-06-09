@@ -1,341 +1,13 @@
 /* =========================================================
-   OCEAN WISH SYSTEM — COMPLETE FLAT STYLE (CENTER ALIGNED)
+   📊 PREMIUM HISTORY DRAWER (จัดระเบียบฝั่งขวาพรีเมียม ไร้โค้ดซ้ำซ้อน)
    ========================================================= */
-
-:root {
-    --bg-dark:      #030914; /* น้ำเงินเข้มก้นมหาสมุทร */
-    --card-bg:      #0b162c; /* บล็อกการ์ดน้ำเงินครามพรีเมียม */
-    --gold:         #e0b84c; /* ทองคำวารีเรืองแสง */
-    --gold-dark:    #b38f2b;
-    --ocean-deep:   #061e3d;
-    --aqua-neon:    #2dd4bf; /* ฟ้าอความารีนเรืองแสง */
-    --amber:        #e0a94c;
-    --cream:        #e2f1f7;
-    --control-bar-height: 80px;
-}
-
-/* ── Body ── */
-body {
-    margin: 0;
-    font-family: 'Kanit', sans-serif;
-    background-color: transparent;
-    color: var(--cream);
-    overflow: hidden;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-/* ── ภาพพื้นหลัง ── */
-#forestBg {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    z-index: -2; 
-    background-color: var(--bg-dark); 
-    background-image: url('ocean-bg.png'); 
-    background-size: cover;
-    background-position: center;
-    pointer-events: none;
-    animation: oceanPulse 12s ease-in-out infinite; 
-}
-
-/* ── Background canvas ── */
-#starCanvas {
-    position: fixed; top: 0; left: 0;
-    width: 100%; height: 100%;
-    z-index: -1; 
-    background: transparent; 
-}
-
-/* ==============================
-   CONTAINERS Layout
-   ============================= */
-.container {
-    position: relative;
-    z-index: 50; 
-    text-align: center;
-    width: 90%;
-    max-width: 650px; 
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 20px; 
-    transition: opacity 0.5s;
-}
-
-.setup-box {
-    width: 100%; 
-    box-sizing: border-box; 
-    background: rgba(3, 11, 24, 0.9);
-    padding: 40px 30px;
-    border-radius: 20px;
-    border: 1px solid rgba(45, 212, 191, 0.25);
-    backdrop-filter: blur(15px);
-    box-shadow: 0 0 60px rgba(11, 35, 71, 0.5), inset 0 0 40px rgba(0,0,0,0.5);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-#adminControls {
-    width: 100%;
-    box-sizing: border-box;
-    background: rgba(3, 11, 24, 0.9);
-    padding: 40px 30px;
-    border-radius: 20px;
-    border: 1px solid rgba(224, 184, 76, 0.25); 
-    backdrop-filter: blur(15px);
-    box-shadow: 0 0 60px rgba(11, 35, 71, 0.4);
-}
-
-.logo-wrap {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    margin-bottom: 6px;
-}
-.leaf-icon { font-size: 28px; }
-
-/* ── Typography ── */
-.gold-text {
-    font-family: 'Cinzel Decorative', serif;
-    color: var(--gold);
-    font-size: clamp(20px, 4vw, 32px);
-    margin: 0;
-    text-shadow: 0 0 20px rgba(224, 184, 76, 0.6);
-    letter-spacing: 2px;
-}
-.sub-text { color: #7fa6c7; font-size: 14px; margin-bottom: 20px; }
-
-/* ── Input ── */
-input[type="text"] {
-    width: 80%;
-    padding: 15px;
-    border-radius: 12px;
-    border: 1px solid rgba(45, 212, 191, 0.3);
-    background: rgba(1, 5, 12, 0.7);
-    color: var(--cream);
-    text-align: center;
-    font-size: 16px;
-    font-family: 'Kanit', sans-serif;
-    margin-bottom: 20px;
-    outline: none;
-    transition: border-color 0.3s;
-}
-input[type="text"]:focus {
-    border-color: var(--aqua-neon);
-    box-shadow: 0 0 15px rgba(45, 212, 191, 0.3);
-}
-
-/* ── Wish button ── */
-.btn-wish {
-    background: linear-gradient(160deg, var(--gold) 0%, var(--gold-dark) 100%);
-    color: #040914;
-    padding: 12px 30px;
-    font-size: 18px;
-    font-weight: 800;
-    font-family: 'Kanit', sans-serif;
-    border-radius: 50px;
-    border: 3px solid rgba(255, 235, 170, 0.8);
-    cursor: pointer;
-    box-shadow: 0 5px 25px rgba(0,0,0,0.5), 0 0 15px rgba(224, 184, 76, 0.3);
-    white-space: nowrap;
-    transition: transform 0.1s, box-shadow 0.2s;
-    letter-spacing: 1px;
-}
-.btn-wish:hover  { box-shadow: 0 8px 30px rgba(0,0,0,0.6), 0 0 25px rgba(224, 184, 76, 0.5); }
-.btn-wish:active { transform: scale(0.95); }
-.start-btn {
-    font-size: 22px;
-    padding: 18px 60px;
-    margin-top: 20px;
-    letter-spacing: 3px;
-}
-
-.pool-count {
-    font-size: 18px;
-    color: #7fa6c7;
-    margin-top: 20px;
-    text-shadow: 0 0 10px rgba(45,212,191,0.2);
-}
-
-/* ==============================================
-   RESULT SCREEN (หน้าจอแสดงผลการ์ดรายชื่อ)
-   ============================================== */
-#resultScreen {
-    display: none;
-    position: fixed; top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(2, 6, 15, 0.95);
-    z-index: 700;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center; 
-}
-
-.result-header {
-    text-align: center;
-    margin-top: 40px;
-    margin-bottom: 20px;
-    flex-shrink: 0;
-}
-
-#resultTitle {
-    font-family: 'Cinzel Decorative', serif;
-    font-size: clamp(24px, 4vw, 42px);
-    margin: 0;
-    letter-spacing: 2px;
-}
-
-.result-content {
-    width: 100%;
-    height: calc(100vh - 150px); /* ล็อกความสูงเพื่อไม่ให้ไหลเยิ้ม */
-    overflow-y: auto;
-    padding: 40px;
-    box-sizing: border-box;
-    display: flex;
-    justify-content: center; /* ดึงเนื้อหาเข้ากลางจอ */
-    align-items: flex-start;
-}
-
-.result-grid {
-    display: grid;
-    /* เปลี่ยนวิธีเรียงการ์ด ให้เว้นระยะห่างแน่นอน */
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); 
-    gap: 30px;
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    justify-items: center; /* บังคับการ์ดให้อยู่กึ่งกลางกล่องตัวเอง */
-}
-
-.card {
-    width: 260px; /* บังคับความกว้างให้คงที่ ไม่ให้เบี้ยวตามข้อมูล */
-    min-height: 240px;
-    background: linear-gradient(145deg, #0d1a33 0%, #040914 100%);
-    border-radius: 14px;
-    overflow: hidden;
-    border: 2px solid #1e365c;
-    display: flex; 
-    flex-direction: column;
-    box-sizing: border-box;
-    transform: scale(1);
-    animation: popInFlat 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.15) backwards;
-    transition: transform 0.2s ease, border-color 0.2s, box-shadow 0.2s;
-}
-
-.card:hover {
-    transform: translateY(-8px) scale(1.03);
-    border-color: var(--glow-color);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.9), 0 0 30px var(--glow-color);
-}
-
-.card-glow-line {
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 4px;
-    z-index: 10;
-    box-shadow: 0 0 15px var(--glow-color);
-}
-
-.card-header {
-    padding: 14px 10px;
-    font-size: 17px;
-    font-weight: 800;
-    text-align: center;
-    letter-spacing: 1.5px;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.6);
-}
-
-.card-body {
-    padding: 20px 12px;
-    flex-grow: 1;
-    display: flex; 
-    flex-direction: column;
-    justify-content: center;
-    text-align: center;
-    gap: 10px;
-}
-
-.info-main {
-    font-size: 17px;
-    font-weight: 800;
-    margin-bottom: 2px;
-    line-height: 1.3;
-    letter-spacing: 0.5px;
-}
-
-.info-sub {
-    font-size: 15px;
-    color: #a5f3fc; 
-    font-weight: 500;
-    line-height: 1.4;
-    text-shadow: 0 0 8px rgba(45, 212, 191, 0.3);
-}
-
-.card-shine-overlay {
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0) 50%, rgba(0,0,0,0.15) 100%);
-    pointer-events: none;
-    z-index: 5;
-}
-
-@keyframes popInFlat {
-    from { 
-        transform: scale(0.6) translateY(40px); 
-        opacity: 0; 
-        filter: brightness(2.5); 
-    }
-    to { 
-        transform: scale(1) translateY(0); 
-        opacity: 1;
-        filter: brightness(1);
-    }
-}
-
-/* ── Control bar ── */
-.control-bar {
-    position: fixed; bottom: 0; left: 0;
-    width: 100%;
-    height: var(--control-bar-height);
-    background: rgba(3, 9, 20, 0.98);
-    border-top: 1px solid rgba(45, 212, 191, 0.3);
-    display: flex;
-    justify-content: center; 
-    align-items: center;
-    gap: 20px;
-    backdrop-filter: blur(8px);
-    z-index: 750;
-}
-
-.btn-secondary {
-    background: transparent;
-    border: 1px solid #1a3f66;
-    color: #7fa6c7;
-    font-size: 16px; font-family: 'Kanit', sans-serif;
-    padding: 10px 25px;
-    border-radius: 50px;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-.btn-secondary:hover {
-    border-color: var(--aqua-neon);
-    color: var(--cream);
-    background: rgba(45, 212, 191, 0.12);
-}
-
-/* ==============================================
-   📊 PREMIUM HISTORY DRAWER (🔥 FIXED: ปรับปรุงโครงสร้างให้อยู่ฝั่งขวาพรีเมียม)
-   ============================================== */
 .history-modal {
     display: none;
-    position: fixed; top: 0; left: 0;
-    width: 100%; height: 100%;
+    position: fixed; 
+    top: 0; 
+    left: 0;
+    width: 100%; 
+    height: 100%;
     background: rgba(1, 4, 10, 0.5);
     z-index: 2000;
     justify-content: flex-end; /* บังคับจัดชิดขอบฝั่งขวาสุดของหน้าจอ */
@@ -344,14 +16,12 @@ input[type="text"]:focus {
 }
 
 .history-content {
-    /* [FIXED] ไล่เฉดสีแก้วกระจกครามเข้มกึ่งโปร่งแสงพรีเมียมรับธีมมหาสมุทร */
     background: linear-gradient(180deg, rgba(6, 19, 38, 0.95) 0%, rgba(2, 8, 18, 0.98) 100%);
     width: 100%; 
     max-width: 450px; 
     height: 100vh;
     border-radius: 0; 
-    /* [FIXED] ตัดขอบทองคำเรืองแสงฝั่งซ้ายแบบหรูหราอลังการฉายโปรเจกเตอร์ */
-    border-left: 3px solid var(--gold); 
+    border-left: 3px solid var(--gold); /* ตัดขอบทองคำเรืองแสงฝั่งซ้าย */
     display: flex; 
     flex-direction: column;
     overflow: hidden;
@@ -362,7 +32,6 @@ input[type="text"]:focus {
 
 .history-header {
     padding: 24px 20px;
-    /* [FIXED] เพิ่มแถบพื้นหลังสีทองคำมืดหนุนหัวข้อให้ดูมีระดับ */
     background: linear-gradient(90deg, #030a17 0%, rgba(224, 184, 76, 0.08) 100%);
     border-bottom: 2px solid rgba(224, 184, 76, 0.3);
     display: flex; 
@@ -377,8 +46,29 @@ input[type="text"]:focus {
     font-family: 'Cinzel Decorative', serif;
     font-size: 20px;
     letter-spacing: 2px;
-    /* [FIXED] เพิ่มออร่าแสงเรืองสีทองรอบตัวอักษรหัวข้อประวัติ */
     text-shadow: 0 0 15px rgba(224, 184, 76, 0.6);
+}
+
+.close-btn {
+    background: none; 
+    border: none;
+    color: #43719c; 
+    font-size: 28px;
+    cursor: pointer; 
+    padding: 0;
+    transition: color 0.2s;
+}
+.close-btn:hover { 
+    color: var(--cream); 
+}
+
+.history-body {
+    display: flex; 
+    flex-direction: column;
+    flex: 1; 
+    min-height: 0;
+    background: transparent; 
+    overflow: hidden;
 }
 
 .history-tabs {
@@ -390,9 +80,67 @@ input[type="text"]:focus {
     overflow-x: auto; 
     white-space: nowrap;
     flex-shrink: 0;
+    scrollbar-width: none;
+}
+.history-tabs::-webkit-scrollbar { 
+    display: none; 
 }
 
-/* [FIXED] รังสรรค์ลวดลายการ์ดแถวประวัติรายชื่อให้แยกสัดส่วน อ่านง่ายเป็นระเบียบสูง */
+.tab-btn {
+    background: transparent; 
+    border: none;
+    color: #5887b5;
+    padding: 14px 10px;
+    font-family: 'Kanit', sans-serif; 
+    font-size: 14px; 
+    font-weight: 600;
+    cursor: pointer; 
+    position: relative;
+    transition: color 0.2s;
+}
+.tab-btn:hover { 
+    color: var(--cream); 
+}
+.tab-btn.active { 
+    color: var(--gold); 
+}
+.tab-btn.active::after {
+    content: '';
+    position: absolute; 
+    bottom: -2px; 
+    left: 0;
+    width: 100%; 
+    height: 3px;
+    background: var(--gold);
+    border-radius: 2px 2px 0 0;
+}
+
+.history-content-wrapper {
+    flex-grow: 1; 
+    overflow-y: auto; 
+    padding: 10px 0;
+    scrollbar-width: thin; 
+    scrollbar-color: #1a3f66 #061124;
+}
+.history-content-wrapper::-webkit-scrollbar { 
+    width: 6px; 
+}
+.history-content-wrapper::-webkit-scrollbar-track { 
+    background: transparent; 
+}
+.history-content-wrapper::-webkit-scrollbar-thumb { 
+    background: #1a3f66; 
+    border-radius: 4px; 
+}
+
+.tab-content { 
+    display: none; 
+}
+.tab-content.active { 
+    display: block; 
+}
+
+/* ลวดลายการ์ดแถวประวัติรายชื่อฉบับแก้ไขสมบูรณ์ */
 .history-item {
     padding: 16px 25px;
     margin: 10px 15px;
@@ -410,7 +158,7 @@ input[type="text"]:focus {
 .history-item:hover {
     background: rgba(11, 22, 44, 0.9);
     border-color: var(--gold);
-    border-left-color: var(--gold); /* โฮเวอร์แล้วแถบสีจะเปลี่ยนเป็นทองเรืองแสง */
+    border-left-color: var(--gold);
     transform: translateX(-4px);
 }
 
@@ -427,6 +175,7 @@ input[type="text"]:focus {
     font-weight: 500;
 }
 
+/* อนิเมชันระบบ */
 @keyframes slideInRight {
     from { transform: translateX(100%); }
     to   { transform: translateX(0); }
@@ -435,94 +184,6 @@ input[type="text"]:focus {
 @keyframes fadeIn {
     from { opacity: 0; }
     to   { opacity: 1; }
-}
-
-.history-header {
-    padding: 20px;
-    background: #030a17;
-    border-bottom: 1px solid rgba(45, 212, 191, 0.2);
-    display: flex; justify-content: space-between; align-items: center;
-    flex-shrink: 0;
-}
-.history-header h2 {
-    margin: 0;
-    color: var(--gold);
-    font-family: 'Cinzel Decorative', serif;
-    font-size: 18px;
-    letter-spacing: 2px;
-}
-.close-btn {
-    background: none; border: none;
-    color: #43719c; font-size: 28px;
-    cursor: pointer; padding: 0;
-    transition: color 0.2s;
-}
-.close-btn:hover { color: var(--cream); }
-
-.history-body {
-    display: flex; flex-direction: column;
-    flex: 1; min-height: 0;
-    background: transparent; overflow: hidden;
-}
-.history-tabs {
-    display: flex; gap: 8px;
-    padding: 0 15px;
-    background: #040d1c;
-    border-bottom: 2px solid #0f2244;
-    overflow-x: auto; white-space: nowrap;
-    flex-shrink: 0;
-    scrollbar-width: none;
-}
-.history-tabs::-webkit-scrollbar { display: none; }
-
-.tab-btn {
-    background: transparent; border: none;
-    color: #5887b5;
-    padding: 14px 10px;
-    font-family: 'Kanit', sans-serif; font-size: 14px; font-weight: 600;
-    cursor: pointer; position: relative;
-    transition: color 0.2s;
-}
-.tab-btn:hover { color: var(--cream); }
-.tab-btn.active { color: var(--gold); }
-.tab-btn.active::after {
-    content: '';
-    position: absolute; bottom: -2px; left: 0;
-    width: 100%; height: 3px;
-    background: var(--gold);
-    border-radius: 2px 2px 0 0;
-}
-
-.history-content-wrapper {
-    flex-grow: 1; overflow-y: auto; padding: 10px 0;
-    scrollbar-width: thin; scrollbar-color: #1a3f66 #061124;
-}
-.history-content-wrapper::-webkit-scrollbar { width: 6px; }
-.history-content-wrapper::-webkit-scrollbar-track { background: transparent; }
-.history-content-wrapper::-webkit-scrollbar-thumb { background: #1a3f66; border-radius: 4px; }
-
-.tab-content { display: none; }
-.tab-content.active { display: block; }
-
-/* ลวดลายแถวประวัติรายชื่อ */
-.history-item {
-    padding: 16px 25px;
-    border-bottom: 1px solid #0f2244;
-    display: flex; 
-    flex-direction: column;
-    gap: 4px;
-    transition: background 0.15s;
-}
-.history-item:hover { background: rgba(45, 212, 191, 0.05); }
-
-.history-item .winner-name {
-    font-weight: 700;
-    font-size: 16px;
-    color: var(--cream);
-}
-.history-item .winner-dept {
-    font-size: 13px;
-    color: #5887b5;
 }
 
 @keyframes oceanPulse {
