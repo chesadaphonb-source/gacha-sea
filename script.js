@@ -173,11 +173,17 @@ function triggerWish() {
 
     if (typeof GOOGLE_SCRIPT_URL !== 'undefined' && GOOGLE_SCRIPT_URL) {
         const sheetData = displayWinners.map(d => ({ id: d.id, name: d.name, dept: d.dept }));
+        
         fetch(GOOGLE_SCRIPT_URL, {
-            method: "POST", mode: "no-cors",
-            headers: { "Content-Type": "application/json" },
+            method: "POST",
+            mode: "cors", 
+            headers: { 
+                "Content-Type": "text/plain;charset=utf-8" 
+            },
             body: JSON.stringify({ rank: tier.name, winners: sheetData })
-        }).catch(err => console.error(err));
+        })
+        .then(res => console.log("ยิงข้อมูลสำเร็จ!"))
+        .catch(err => console.error("ยิงลง Sheet ล้มเหลว:", err));
     }
 
     playAbyssalBubbleAnimation(displayWinners);
@@ -201,14 +207,13 @@ function playAbyssalBubbleAnimation(winners) {
     treasureState = "bubble_burst";
     burstBubbles = [];
 
-    // 🔥 [FIXED] ลดจำนวนฟองลงเหลือ 160 ลูกเพื่อแก้กระตุก และเพิ่มขนาดรัศมีให้ใหญ่สมบูรณ์เต็มจอ
     for (let i = 0; i < 200; i++) {
-        let size = Math.random() * 25 + 10; // ปรับขนาดเพิ่มขึ้นเด่นชัดจากก้นจอ
+        let size = Math.random() * 25 + 10; 
         burstBubbles.push({
             x: Math.random() * w,
-            y: h + Math.random() * 80, // ตั้งพิกัดให้สแตนด์บายชิดติดขอบล่างจอพอดี
+            y: h + Math.random() * 80, 
             r: size,
-            vy: -(Math.random() * 2 + 5), // เพิ่มความเร็วในการพุ่งกวาดขึ้นด้านบน
+            vy: -(Math.random() * 2 + 5), 
             vx: (Math.random() - 0.5) * 1.5,
             alpha: Math.random() * 0.7 + 0.3,
             wobble: Math.random() * Math.PI,
@@ -219,7 +224,7 @@ function playAbyssalBubbleAnimation(winners) {
     // ⏱️ หน่วงเวลาให้ฟองน้ำพุ่งกวาดผ่านหน้าจอขึ้นไปด้านบนจนสุด (1.5 วินาที) จากนั้นจึงแสดงผลลัพธ์รายชื่อ
     setTimeout(() => {
        showResults(winners, tier);
-    }, 1500)
+    }, 1500); // [FIXED] เพิ่มจุดเซมิโคลอนปิดท้ายฟังก์ชันดักแอนิเมชันให้สมบูรณ์ล็อกสเปกบราวเซอร์
 
     setTimeout(() => {
         treasureState = "none";
@@ -303,7 +308,6 @@ function toggleHistory() {
 
             contentHtml += `<div id="tab-${index}" class="tab-content ${isActive}">`;
             winners.forEach(w => {
-                // จัดโครงสร้าง Class HTML แถวประวัติให้เข้าล็อกการแสดงผลฝั่งขวา
                 contentHtml += `<div class="history-item">
                     <div class="winner-name">${w.name}</div>
                     <div class="winner-dept">ID: ${w.id} | ${w.dept}</div>
@@ -410,7 +414,6 @@ function animate() {
     planktons.forEach(p => { p.update(); p.draw(); });
     seaBubbles.forEach(b => { b.update(); b.draw(); });
 
-    // 🔥 [OPTIMIZED] วาดฟองอากาศแบบตัดคำสั่งประมวลผลที่ซ้ำซ้อนออก เพื่อการันตีความลื่นไหลระดับ 60 FPS
     if (treasureState === "bubble_burst") {
         burstBubbles.forEach(b => {
             b.y += b.vy;
