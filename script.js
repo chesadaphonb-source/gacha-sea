@@ -218,7 +218,8 @@ function playAbyssalBubbleAnimation(winners) {
 
     // ⏱️ หน่วงเวลาให้ฟองน้ำพุ่งกวาดผ่านหน้าจอขึ้นไปด้านบนจนสุด (1.5 วินาที) จากนั้นจึงแสดงผลลัพธ์รายชื่อ
     setTimeout(() => {
-    }, 1500);
+       showResults(winners, tier);
+    }, 1500)
 
     setTimeout(() => {
         treasureState = "none";
