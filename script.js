@@ -1,14 +1,14 @@
 /* =========================================================
-   OCEAN WISH SYSTEM — ENGINE SCRIPT (OPTIMIZED AQUATIC VERSION)
+   OCEAN WISH SYSTEM — ENGINE SCRIPT (DYNAMIC ADMIN VERSION)
    ========================================================= */
 
-/* --- Configuration ตัวแก้จำนวนผู้ได้รับรางวัล--- */
-const prizes = [
-    { name: "เงินรางวัล 500 จำนวน 10 ท่าน!! ", count: 10, color: "#65d4a0" },
-    { name: "รางวัลลำดับที่ 4 ", count: 15, color: "#c084fc" },
-    { name: "รางวัลลำดับที่ 3 ", count: 5, color: "#f472b6" },
-    { name: "รางวัลลำดับที่ 2 ", count: 2,  color: "#fbbf24" },
-    { name: "รางวัลลำดับที่ 1 ", count: 1,  color: "#f59e0b" }
+// สแตนด์บายตารางรางวัลเริ่มต้นไว้ให้ (เจษสามารถไปกด เพิ่ม/ลด/แก้ไข บนหน้าเว็บได้ออโต้)
+let prizes = [
+    { name: "เงินรางวัล 500 จำนวน 10 ท่าน!!", count: 10, color: "#65d4a0" },
+    { name: "รางวัลลำดับที่ 4", count: 15, color: "#c084fc" },
+    { name: "รางวัลลำดับที่ 3", count: 5, color: "#f472b6" },
+    { name: "รางวัลลำดับที่ 2", count: 2,  color: "#fbbf24" },
+    { name: "รางวัลลำดับที่ 1", count: 1,  color: "#f59e0b" }
 ];
 
 /* --- Game State --- */
@@ -19,11 +19,8 @@ let isWarping      = false;
 let currentTierColor = "#65d4a0";
 let winnersHistory = {};
 
-// ระบบเอฟเฟกต์แอนิเมชันเปิดรางวัล
 let treasureState = "none"; 
 let burstBubbles = []; 
-
-// ระบบจำลองบรรยากาศใต้ท้องทะเล (Idle State)
 let seaBubbles = [];
 let planktons = [];
 
@@ -60,11 +57,13 @@ function getDisplayData(winner) {
 }
 
 /* =============================================
-   1. INIT SYSTEM
+   1. INIT SYSTEM & PRIZE MANAGER UI GENERATOR
    ============================================= */
 window.onload = function () {
-    console.log("Ocean Wish System — Premium Deep Sea Mode Built Completed");
-    prizes.forEach(p => { if (!winnersHistory[p.name]) winnersHistory[p.name] = []; });
+    console.log("Ocean Wish System — Dynamic Management Dashboard Completed");
+    
+    // สั่งวาดหน้าต่างตารางจัดการรางวัลเริ่มต้นขึ้นจอหน้าบ้านทันทีมึง
+    renderPrizeManager();
 
     initOceanEngine();
     animate();
@@ -74,12 +73,67 @@ window.onload = function () {
     document.getElementById('resultControls').style.display = 'none';
 };
 
+// ฟังก์ชันสร้างแถวกล่องอินพุตสำหรับตั้งค่ารางวัล
+function renderPrizeManager() {
+    const container = document.getElementById('prizeInputList');
+    container.innerHTML = "";
+    
+    prizes.forEach((prize, index) => {
+        const row = document.createElement('div');
+        row.className = 'prize-config-row';
+        row.innerHTML = `
+            <input type="text" class="p-name" data-idx="${index}" placeholder="ชื่อรางวัล" value="${prize.name}">
+            <input type="number" class="p-count" data-idx="${index}" min="1" placeholder="จำนวน" value="${prize.count}">
+            <input type="color" class="p-color" data-idx="${index}" value="${prize.color}">
+            <button type="button" class="btn-delete-row" onclick="deletePrizeRow(${index})">❌</button>
+        `;
+        container.appendChild(row);
+    });
+}
+
+// ฟังก์ชันกดเพิ่มแถวรางวัลใหม่หน้างาน
+function addPrizeRow() {
+    // บันทึกค่าปัจจุบันจากฟอร์มเก็บไว้ก่อนมึง แถวเก่าจะได้ไม่รีเซ็ตหาย
+    syncPrizesFromUI();
+    
+    // ดันอาร์เรย์รางวัลเปล่าเพิ่มเข้าไปดื้อๆ เลยสัส
+    prizes.push({ name: `รางวัลใหม่ลำดับที่ ${prizes.length + 1}`, count: 5, color: "#2dd4bf" });
+    renderPrizeManager();
+}
+
+// ฟังก์ชันกดลบแถวรางวัลที่ไม่ใช้ออก
+function deletePrizeRow(index) {
+    if (prizes.length <= 1) return alert("⚠️ หน้างานมึงต้องมีรางวัลเหลือเปิดตัวอย่างน้อย 1 รายการนะสัส!");
+    syncPrizesFromUI();
+    prizes.splice(index, 1);
+    renderPrizeManager();
+}
+
+// ฟังก์ชันอ่านค่าจาก Input หน้าบ้านทั้งหมด ยัดกลับเข้าอาร์เรย์ prizes ในแรมมึง
+function syncPrizesFromUI() {
+    const names = document.querySelectorAll('.p-name');
+    const counts = document.querySelectorAll('.p-count');
+    const colors = document.querySelectorAll('.p-color');
+    
+    prizes = [];
+    names.forEach((el, i) => {
+        prizes.push({
+            name: names[i].value.trim() || `รางวัลลำดับที่ ${i + 1}`,
+            count: parseInt(counts[i].value) || 1,
+            color: colors[i].value
+        });
+    });
+}
+
 /* =============================================
    2. ACTIONS (LOCAL RUN)
    ============================================= */
 function loadData() {
     const url = document.getElementById('sheetUrl').value.trim();
     if (!url) return alert("กรุณาใส่ลิงก์ CSV ให้ถูกต้อง");
+
+    // 🔥 [DYNAMIC LOCK] ซิงค์ข้อมูลรางวัลจากแผงควบคุมหน้าบ้านก้อนล่าสุดก่อนดูดไฟล์จริง
+    syncPrizesFromUI();
 
     const btn = document.querySelector('#setupContainer button');
     btn.innerText = "กำลังโหลดข้อมูล…"; btn.disabled = true;
@@ -103,18 +157,20 @@ function loadData() {
                 };
             }).filter(item => item !== null);
 
+            // เซ็ตประวัติผู้ชนะรองรับตามขนาดรางวัลใหม่ที่ตั้งค่า
+            winnersHistory = {};
             prizes.forEach(p => winnersHistory[p.name] = []);
 
             document.getElementById('setupContainer').style.display = 'none';
             document.getElementById('mainScreen').style.display     = 'block';
 
             updateUI(true);
-            alert(`โหลดข้อมูลสำเร็จ! นำรายชื่อเข้าสู่ระบบจำนวน: ${participants.length} คน`);
+            alert(`โหลดข้อมูลสำเร็จ! และล็อกระบบรางวัลจำนวน ${prizes.length} ระดับเรียบร้อย! มีรายชื่อลุ้น: ${participants.length} คน`);
         })
         .catch(err => {
             console.error(err);
             alert("❌ เกิดข้อผิดพลาด:\n" + err.message);
-            btn.innerText = "Load Data (Admin Only)"; btn.disabled = false;
+            btn.innerText = "Load Data & Start System"; btn.disabled = false;
         });
 }
 
@@ -155,7 +211,6 @@ function triggerWish() {
     const tier      = prizes[currentTier];
     const drawCount = Math.min(tier.count, participants.length);
 
-    // สับไพ่สุ่มรายชื่อปกติ
     for (let i = participants.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [participants[i], participants[j]] = [participants[j], participants[i]];
@@ -172,17 +227,15 @@ function triggerWish() {
 
     updateUI(true);
 
-    // 🔥 [FINAL FIXED FRONTEND] ปรับระบบส่งข้อมูลข้ามมิติแบบเงียบ (no-cors) ข้อมูลลงชีตชัวร์ ไร้ Error บล็อกหน้าจอ
     if (typeof GOOGLE_SCRIPT_URL !== 'undefined' && GOOGLE_SCRIPT_URL) {
         const sheetData = displayWinners.map(d => ({ id: d.id, name: d.name, dept: d.dept }));
         
-        // ใช้ URLSearchParams ยัดไส้ข้อมูลเพื่อให้ Google Apps Script ฝั่ง doPost(e) แงะ parameter มาเปิดอ่านได้ง่ายที่สุด
         const params = new URLSearchParams();
         params.append('jsonData', JSON.stringify({ rank: tier.name, winners: sheetData }));
 
         fetch(GOOGLE_SCRIPT_URL, {
             method: "POST",
-            mode: "no-cors", // สั่งให้ยิงทะลุกำแพงความปลอดภัยบราวเซอร์ไปเลย ไม่ต้องรอคำตอบขากลับ
+            mode: "no-cors", 
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded"
             },
@@ -196,7 +249,7 @@ function triggerWish() {
 }
 
 /* =========================================================
-   🫧 FIXED EFFECT: SMOOTH BUBBLE SWEEP (ลดจำนวนฟอง ปรับขนาดใหญ่ขึ้น ลื่นไหลสูงสุด)
+   🫧 FIXED EFFECT: SMOOTH BUBBLE SWEEP
    ========================================================= */
 function playAbyssalBubbleAnimation(winners) {
     const tier = prizes[currentTier];
@@ -227,10 +280,9 @@ function playAbyssalBubbleAnimation(winners) {
         });
     }
 
-    // ⏱️ หน่วงเวลาให้ฟองน้ำพุ่งกวาดผ่านหน้าจอขึ้นไปด้านบนจนสุด (1.5 วินาที) จากนั้นจึงแสดงผลลัพธ์รายชื่อ
     setTimeout(() => {
        showResults(winners, tier);
-    }, 1500); // [FIXED] เพิ่มจุดเซมิโคลอนปิดท้ายฟังก์ชันดักแอนิเมชันให้สมบูรณ์ล็อกสเปกบราวเซอร์
+    }, 1500);
 
     setTimeout(() => {
         treasureState = "none";
@@ -289,7 +341,7 @@ function nextRound() {
 }
 
 /* =============================================
-   📊 HISTORY PANEL GENERATION (🔥 FIXED: ผูกโครงสร้างข้อมูลให้เรียบร้อย)
+   📊 HISTORY PANEL GENERATION
    ============================================= */
 function toggleHistory() {
     const modal = document.getElementById('historyModal');
