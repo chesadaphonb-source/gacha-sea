@@ -28,8 +28,16 @@
                 <span class="leaf-icon">🔱</span>
             </div>
             <p class="sub-text">Connecting to the Abyssal Core...</p>
+            
             <input type="text" id="sheetUrl" placeholder="วางลิงก์ CSV ตรงนี้" value="">
-            <button class="btn-wish start-btn" onclick="loadData()">Load Data (Admin Only)</button>
+            
+            <div class="prize-manager-wrapper">
+                <h3>🛠️จัดการตั้งค่าระดับรางวัลหน้างาน</h3>
+                <div id="prizeInputList"></div>
+                <button type="button" class="btn-add-row" onclick="addPrizeRow()">➕ เพิ่มรางวัลใหม่</button>
+            </div>
+
+            <button class="btn-wish start-btn" style="margin-top: 25px;" onclick="loadData()">Load Data & Start System</button>
         </div>
 
         <div id="adminControls" style="display: none; margin-top: 20px;">
