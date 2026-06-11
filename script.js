@@ -4,7 +4,7 @@
 
 /* --- Configuration ตัวแก้จำนวนผู้ได้รับรางวัล--- */
 const prizes = [
-    { name: "เงินรางวัล 500 จำนวน 20 ท่าน!! ", count: 20, color: "#65d4a0" },
+    { name: "เงินรางวัล 500 จำนวน 10 ท่าน!! ", count: 10, color: "#65d4a0" },
     { name: "รางวัลลำดับที่ 4 ", count: 15, color: "#c084fc" },
     { name: "รางวัลลำดับที่ 3 ", count: 5, color: "#f472b6" },
     { name: "รางวัลลำดับที่ 2 ", count: 2,  color: "#fbbf24" },
